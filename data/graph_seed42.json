@@ -1,0 +1,2893 @@
+{
+  "seed": 42,
+  "packages": {
+    "pkg-000": {
+      "license": "MIT",
+      "owner": "acme-labs",
+      "last_updated": "2025-03-15",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-001": {
+      "license": "Apache-2.0",
+      "owner": "redshift-dev",
+      "last_updated": "2026-03-04",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-012",
+          "1.2.0"
+        ],
+        [
+          "pkg-009",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-002": {
+      "license": "Proprietary",
+      "owner": "acme-labs",
+      "last_updated": "2024-05-18",
+      "deprecated": true,
+      "deps": []
+    },
+    "pkg-003": {
+      "license": "MIT",
+      "owner": "coreteam",
+      "last_updated": "2025-06-10",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-043",
+          "1.2.0"
+        ],
+        [
+          "pkg-065",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-004": {
+      "license": "MIT",
+      "owner": "nimbus-io",
+      "last_updated": "2025-08-18",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-034",
+          "1.2.0"
+        ],
+        [
+          "pkg-149",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-005": {
+      "license": "Proprietary",
+      "owner": "openforge",
+      "last_updated": "2025-07-05",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-071",
+          "1.2.0"
+        ],
+        [
+          "pkg-100",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-006": {
+      "license": "GPL-3.0",
+      "owner": "acme-labs",
+      "last_updated": "2025-11-07",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-036",
+          "1.4.3"
+        ],
+        [
+          "pkg-048",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-007": {
+      "license": "GPL-3.0",
+      "owner": "dataworks",
+      "last_updated": "2025-11-15",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-014",
+          "2.1.1"
+        ],
+        [
+          "pkg-087",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-008": {
+      "license": "GPL-3.0",
+      "owner": "acme-labs",
+      "last_updated": "2026-03-24",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-110",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-009": {
+      "license": "GPL-3.0",
+      "owner": "dataworks",
+      "last_updated": "2025-04-06",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-010": {
+      "license": "BSD-3-Clause",
+      "owner": "nimbus-io",
+      "last_updated": "2026-01-17",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-011": {
+      "license": "BSD-3-Clause",
+      "owner": "acme-labs",
+      "last_updated": "2025-02-06",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-074",
+          "3.0.0"
+        ],
+        [
+          "pkg-038",
+          "1.4.3"
+        ]
+      ]
+    },
+    "pkg-012": {
+      "license": "Proprietary",
+      "owner": "dataworks",
+      "last_updated": "2025-09-01",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-043",
+          "1.4.3"
+        ],
+        [
+          "pkg-023",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-013": {
+      "license": "MIT",
+      "owner": "redshift-dev",
+      "last_updated": "2025-06-20",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-108",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-014": {
+      "license": "MIT",
+      "owner": "coreteam",
+      "last_updated": "2026-03-07",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-102",
+          "2.0.0"
+        ],
+        [
+          "pkg-018",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-015": {
+      "license": "BSD-3-Clause",
+      "owner": "redshift-dev",
+      "last_updated": "2024-09-12",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-016": {
+      "license": "GPL-3.0",
+      "owner": "coreteam",
+      "last_updated": "2025-04-01",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-109",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-017": {
+      "license": "MIT",
+      "owner": "nimbus-io",
+      "last_updated": "2025-10-14",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-057",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-018": {
+      "license": "Apache-2.0",
+      "owner": "coreteam",
+      "last_updated": "2024-02-26",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-019": {
+      "license": "Proprietary",
+      "owner": "coreteam",
+      "last_updated": "2024-12-04",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-089",
+          "2.0.0"
+        ],
+        [
+          "pkg-143",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-020": {
+      "license": "MIT",
+      "owner": "coreteam",
+      "last_updated": "2026-07-26",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-089",
+          "1.2.0"
+        ],
+        [
+          "pkg-103",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-021": {
+      "license": "BSD-3-Clause",
+      "owner": "dataworks",
+      "last_updated": "2026-05-17",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-137",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-022": {
+      "license": "Proprietary",
+      "owner": "redshift-dev",
+      "last_updated": "2024-12-24",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-095",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-023": {
+      "license": "BSD-3-Clause",
+      "owner": "openforge",
+      "last_updated": "2024-03-04",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-072",
+          "1.0.0"
+        ],
+        [
+          "pkg-067",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-024": {
+      "license": "Apache-2.0",
+      "owner": "coreteam",
+      "last_updated": "2025-04-09",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-048",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-025": {
+      "license": "BSD-3-Clause",
+      "owner": "nimbus-io",
+      "last_updated": "2024-07-04",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-026": {
+      "license": "Apache-2.0",
+      "owner": "nimbus-io",
+      "last_updated": "2023-12-24",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-129",
+          "1.4.3"
+        ]
+      ]
+    },
+    "pkg-027": {
+      "license": "MIT",
+      "owner": "acme-labs",
+      "last_updated": "2025-11-20",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-063",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-028": {
+      "license": "BSD-3-Clause",
+      "owner": "nimbus-io",
+      "last_updated": "2026-05-22",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-141",
+          "2.1.1"
+        ],
+        [
+          "pkg-064",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-029": {
+      "license": "Proprietary",
+      "owner": "openforge",
+      "last_updated": "2023-10-12",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-054",
+          "1.2.0"
+        ],
+        [
+          "pkg-040",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-030": {
+      "license": "Proprietary",
+      "owner": "acme-labs",
+      "last_updated": "2026-02-07",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-093",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-031": {
+      "license": "Proprietary",
+      "owner": "dataworks",
+      "last_updated": "2024-11-02",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-032": {
+      "license": "BSD-3-Clause",
+      "owner": "coreteam",
+      "last_updated": "2024-03-14",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-093",
+          "3.0.0"
+        ],
+        [
+          "pkg-115",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-033": {
+      "license": "GPL-3.0",
+      "owner": "nimbus-io",
+      "last_updated": "2025-09-29",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-135",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-034": {
+      "license": "MIT",
+      "owner": "redshift-dev",
+      "last_updated": "2025-01-26",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-035": {
+      "license": "Proprietary",
+      "owner": "nimbus-io",
+      "last_updated": "2025-08-18",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-064",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-036": {
+      "license": "Apache-2.0",
+      "owner": "nimbus-io",
+      "last_updated": "2023-10-09",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-068",
+          "3.0.0"
+        ],
+        [
+          "pkg-076",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-037": {
+      "license": "Proprietary",
+      "owner": "dataworks",
+      "last_updated": "2024-01-03",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-098",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-038": {
+      "license": "GPL-3.0",
+      "owner": "dataworks",
+      "last_updated": "2025-05-27",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-083",
+          "3.0.0"
+        ],
+        [
+          "pkg-093",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-039": {
+      "license": "Proprietary",
+      "owner": "acme-labs",
+      "last_updated": "2026-04-07",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-085",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-040": {
+      "license": "MIT",
+      "owner": "nimbus-io",
+      "last_updated": "2026-01-15",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-075",
+          "1.4.3"
+        ]
+      ]
+    },
+    "pkg-041": {
+      "license": "BSD-3-Clause",
+      "owner": "nimbus-io",
+      "last_updated": "2025-10-26",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-071",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-042": {
+      "license": "Proprietary",
+      "owner": "openforge",
+      "last_updated": "2025-07-23",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-067",
+          "1.0.0"
+        ],
+        [
+          "pkg-083",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-043": {
+      "license": "Apache-2.0",
+      "owner": "redshift-dev",
+      "last_updated": "2024-12-30",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-141",
+          "1.2.0"
+        ],
+        [
+          "pkg-132",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-044": {
+      "license": "GPL-3.0",
+      "owner": "openforge",
+      "last_updated": "2023-11-05",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-045": {
+      "license": "Apache-2.0",
+      "owner": "coreteam",
+      "last_updated": "2026-05-21",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-107",
+          "3.0.0"
+        ],
+        [
+          "pkg-081",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-046": {
+      "license": "Proprietary",
+      "owner": "nimbus-io",
+      "last_updated": "2025-06-15",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-123",
+          "1.0.0"
+        ],
+        [
+          "pkg-083",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-047": {
+      "license": "MIT",
+      "owner": "acme-labs",
+      "last_updated": "2026-06-01",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-077",
+          "1.4.3"
+        ]
+      ]
+    },
+    "pkg-048": {
+      "license": "MIT",
+      "owner": "dataworks",
+      "last_updated": "2026-05-07",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-049": {
+      "license": "GPL-3.0",
+      "owner": "redshift-dev",
+      "last_updated": "2024-01-09",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-051",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-050": {
+      "license": "Apache-2.0",
+      "owner": "redshift-dev",
+      "last_updated": "2024-02-04",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-067",
+          "1.0.0"
+        ],
+        [
+          "pkg-086",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-051": {
+      "license": "BSD-3-Clause",
+      "owner": "openforge",
+      "last_updated": "2025-09-05",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-089",
+          "1.2.0"
+        ],
+        [
+          "pkg-141",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-052": {
+      "license": "BSD-3-Clause",
+      "owner": "dataworks",
+      "last_updated": "2024-05-15",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-066",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-053": {
+      "license": "MIT",
+      "owner": "redshift-dev",
+      "last_updated": "2026-03-12",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-090",
+          "2.0.0"
+        ],
+        [
+          "pkg-114",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-054": {
+      "license": "GPL-3.0",
+      "owner": "acme-labs",
+      "last_updated": "2025-05-08",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-078",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-055": {
+      "license": "Proprietary",
+      "owner": "openforge",
+      "last_updated": "2025-12-16",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-117",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-056": {
+      "license": "GPL-3.0",
+      "owner": "openforge",
+      "last_updated": "2025-05-06",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-057": {
+      "license": "MIT",
+      "owner": "openforge",
+      "last_updated": "2026-03-13",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-120",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-058": {
+      "license": "Proprietary",
+      "owner": "acme-labs",
+      "last_updated": "2026-03-22",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-139",
+          "1.0.0"
+        ],
+        [
+          "pkg-146",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-059": {
+      "license": "Apache-2.0",
+      "owner": "coreteam",
+      "last_updated": "2024-06-19",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-060": {
+      "license": "Apache-2.0",
+      "owner": "openforge",
+      "last_updated": "2026-06-01",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-099",
+          "1.2.0"
+        ],
+        [
+          "pkg-071",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-061": {
+      "license": "MIT",
+      "owner": "openforge",
+      "last_updated": "2025-04-04",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-115",
+          "2.1.1"
+        ],
+        [
+          "pkg-139",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-062": {
+      "license": "BSD-3-Clause",
+      "owner": "dataworks",
+      "last_updated": "2024-05-16",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-063": {
+      "license": "Proprietary",
+      "owner": "redshift-dev",
+      "last_updated": "2024-01-07",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-112",
+          "2.0.0"
+        ],
+        [
+          "pkg-121",
+          "1.4.3"
+        ]
+      ]
+    },
+    "pkg-064": {
+      "license": "GPL-3.0",
+      "owner": "coreteam",
+      "last_updated": "2026-06-02",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-119",
+          "2.1.1"
+        ],
+        [
+          "pkg-104",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-065": {
+      "license": "Proprietary",
+      "owner": "acme-labs",
+      "last_updated": "2024-12-26",
+      "deprecated": true,
+      "deps": []
+    },
+    "pkg-066": {
+      "license": "Proprietary",
+      "owner": "openforge",
+      "last_updated": "2023-12-05",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-079",
+          "3.0.0"
+        ],
+        [
+          "pkg-093",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-067": {
+      "license": "Proprietary",
+      "owner": "coreteam",
+      "last_updated": "2026-06-05",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-078",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-068": {
+      "license": "MIT",
+      "owner": "coreteam",
+      "last_updated": "2026-05-12",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-069": {
+      "license": "Apache-2.0",
+      "owner": "openforge",
+      "last_updated": "2026-01-27",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-070": {
+      "license": "Proprietary",
+      "owner": "coreteam",
+      "last_updated": "2026-07-10",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-080",
+          "1.0.0"
+        ],
+        [
+          "pkg-091",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-071": {
+      "license": "BSD-3-Clause",
+      "owner": "redshift-dev",
+      "last_updated": "2023-10-25",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-148",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-072": {
+      "license": "GPL-3.0",
+      "owner": "coreteam",
+      "last_updated": "2024-12-25",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-077",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-073": {
+      "license": "BSD-3-Clause",
+      "owner": "coreteam",
+      "last_updated": "2025-01-23",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-110",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-074": {
+      "license": "MIT",
+      "owner": "acme-labs",
+      "last_updated": "2024-03-05",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-084",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-075": {
+      "license": "Proprietary",
+      "owner": "acme-labs",
+      "last_updated": "2026-05-02",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-076": {
+      "license": "Proprietary",
+      "owner": "dataworks",
+      "last_updated": "2026-01-01",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-102",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-077": {
+      "license": "MIT",
+      "owner": "coreteam",
+      "last_updated": "2024-09-03",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-078": {
+      "license": "BSD-3-Clause",
+      "owner": "nimbus-io",
+      "last_updated": "2025-01-18",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-107",
+          "1.4.3"
+        ],
+        [
+          "pkg-098",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-079": {
+      "license": "Proprietary",
+      "owner": "acme-labs",
+      "last_updated": "2025-01-24",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-080": {
+      "license": "MIT",
+      "owner": "coreteam",
+      "last_updated": "2025-04-06",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-081": {
+      "license": "MIT",
+      "owner": "redshift-dev",
+      "last_updated": "2025-11-15",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-082": {
+      "license": "Proprietary",
+      "owner": "coreteam",
+      "last_updated": "2024-10-27",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-119",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-083": {
+      "license": "GPL-3.0",
+      "owner": "nimbus-io",
+      "last_updated": "2024-01-03",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-084": {
+      "license": "MIT",
+      "owner": "acme-labs",
+      "last_updated": "2024-05-15",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-123",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-085": {
+      "license": "MIT",
+      "owner": "acme-labs",
+      "last_updated": "2024-11-15",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-120",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-086": {
+      "license": "GPL-3.0",
+      "owner": "coreteam",
+      "last_updated": "2024-04-08",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-118",
+          "1.0.0"
+        ],
+        [
+          "pkg-115",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-087": {
+      "license": "BSD-3-Clause",
+      "owner": "nimbus-io",
+      "last_updated": "2026-09-10",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-088": {
+      "license": "Apache-2.0",
+      "owner": "nimbus-io",
+      "last_updated": "2026-07-18",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-136",
+          "1.4.3"
+        ]
+      ]
+    },
+    "pkg-089": {
+      "license": "Proprietary",
+      "owner": "nimbus-io",
+      "last_updated": "2025-11-30",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-106",
+          "1.0.0"
+        ],
+        [
+          "pkg-091",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-090": {
+      "license": "MIT",
+      "owner": "dataworks",
+      "last_updated": "2024-09-13",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-144",
+          "2.1.1"
+        ],
+        [
+          "pkg-146",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-091": {
+      "license": "MIT",
+      "owner": "dataworks",
+      "last_updated": "2025-07-26",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-092": {
+      "license": "MIT",
+      "owner": "dataworks",
+      "last_updated": "2024-06-19",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-145",
+          "2.1.1"
+        ],
+        [
+          "pkg-110",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-093": {
+      "license": "Apache-2.0",
+      "owner": "coreteam",
+      "last_updated": "2025-11-01",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-094": {
+      "license": "Apache-2.0",
+      "owner": "openforge",
+      "last_updated": "2026-08-10",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-128",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-095": {
+      "license": "GPL-3.0",
+      "owner": "openforge",
+      "last_updated": "2025-05-09",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-113",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-096": {
+      "license": "MIT",
+      "owner": "openforge",
+      "last_updated": "2026-07-12",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-124",
+          "2.0.0"
+        ],
+        [
+          "pkg-137",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-097": {
+      "license": "Apache-2.0",
+      "owner": "coreteam",
+      "last_updated": "2024-03-01",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-120",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-098": {
+      "license": "Apache-2.0",
+      "owner": "coreteam",
+      "last_updated": "2026-08-12",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-119",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-099": {
+      "license": "BSD-3-Clause",
+      "owner": "dataworks",
+      "last_updated": "2025-03-08",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-100": {
+      "license": "GPL-3.0",
+      "owner": "dataworks",
+      "last_updated": "2023-11-21",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-101": {
+      "license": "Proprietary",
+      "owner": "dataworks",
+      "last_updated": "2026-08-04",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-128",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-102": {
+      "license": "GPL-3.0",
+      "owner": "coreteam",
+      "last_updated": "2025-04-04",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-121",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-103": {
+      "license": "Proprietary",
+      "owner": "openforge",
+      "last_updated": "2024-10-22",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-139",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-104": {
+      "license": "GPL-3.0",
+      "owner": "openforge",
+      "last_updated": "2023-11-17",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-110",
+          "1.4.3"
+        ]
+      ]
+    },
+    "pkg-105": {
+      "license": "Proprietary",
+      "owner": "coreteam",
+      "last_updated": "2025-04-26",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-126",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-106": {
+      "license": "BSD-3-Clause",
+      "owner": "acme-labs",
+      "last_updated": "2023-10-31",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-139",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-107": {
+      "license": "Proprietary",
+      "owner": "redshift-dev",
+      "last_updated": "2025-08-22",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-142",
+          "2.0.0"
+        ],
+        [
+          "pkg-137",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-108": {
+      "license": "MIT",
+      "owner": "redshift-dev",
+      "last_updated": "2024-11-22",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-109": {
+      "license": "MIT",
+      "owner": "redshift-dev",
+      "last_updated": "2025-01-22",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-133",
+          "2.0.0"
+        ],
+        [
+          "pkg-149",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-110": {
+      "license": "BSD-3-Clause",
+      "owner": "dataworks",
+      "last_updated": "2024-06-27",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-114",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-111": {
+      "license": "Proprietary",
+      "owner": "coreteam",
+      "last_updated": "2025-09-02",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-147",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-112": {
+      "license": "BSD-3-Clause",
+      "owner": "redshift-dev",
+      "last_updated": "2025-10-08",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-141",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-113": {
+      "license": "GPL-3.0",
+      "owner": "openforge",
+      "last_updated": "2026-09-29",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-121",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-114": {
+      "license": "Apache-2.0",
+      "owner": "openforge",
+      "last_updated": "2024-12-09",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-130",
+          "1.4.3"
+        ],
+        [
+          "pkg-125",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-115": {
+      "license": "BSD-3-Clause",
+      "owner": "redshift-dev",
+      "last_updated": "2025-07-19",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-116": {
+      "license": "Apache-2.0",
+      "owner": "redshift-dev",
+      "last_updated": "2026-04-09",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-143",
+          "1.2.0"
+        ],
+        [
+          "pkg-122",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-117": {
+      "license": "Proprietary",
+      "owner": "dataworks",
+      "last_updated": "2026-03-22",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-125",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-118": {
+      "license": "Apache-2.0",
+      "owner": "redshift-dev",
+      "last_updated": "2025-01-02",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-119": {
+      "license": "Apache-2.0",
+      "owner": "coreteam",
+      "last_updated": "2026-08-10",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-149",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-120": {
+      "license": "BSD-3-Clause",
+      "owner": "nimbus-io",
+      "last_updated": "2026-05-03",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-137",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-121": {
+      "license": "Proprietary",
+      "owner": "coreteam",
+      "last_updated": "2024-08-04",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-135",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-122": {
+      "license": "Apache-2.0",
+      "owner": "coreteam",
+      "last_updated": "2026-09-18",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-130",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-123": {
+      "license": "MIT",
+      "owner": "openforge",
+      "last_updated": "2025-07-08",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-128",
+          "1.2.0"
+        ],
+        [
+          "pkg-136",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-124": {
+      "license": "Proprietary",
+      "owner": "openforge",
+      "last_updated": "2026-06-19",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-148",
+          "1.0.0"
+        ],
+        [
+          "pkg-129",
+          "1.4.3"
+        ]
+      ]
+    },
+    "pkg-125": {
+      "license": "MIT",
+      "owner": "openforge",
+      "last_updated": "2025-12-30",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-136",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-126": {
+      "license": "Proprietary",
+      "owner": "nimbus-io",
+      "last_updated": "2024-12-19",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-127",
+          "1.4.3"
+        ]
+      ]
+    },
+    "pkg-127": {
+      "license": "BSD-3-Clause",
+      "owner": "nimbus-io",
+      "last_updated": "2023-12-01",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-137",
+          "2.1.1"
+        ],
+        [
+          "pkg-146",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-128": {
+      "license": "Proprietary",
+      "owner": "openforge",
+      "last_updated": "2025-11-08",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-133",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-129": {
+      "license": "BSD-3-Clause",
+      "owner": "openforge",
+      "last_updated": "2025-04-17",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-145",
+          "1.4.3"
+        ],
+        [
+          "pkg-141",
+          "2.1.1"
+        ]
+      ]
+    },
+    "pkg-130": {
+      "license": "GPL-3.0",
+      "owner": "nimbus-io",
+      "last_updated": "2024-01-11",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-143",
+          "1.4.3"
+        ],
+        [
+          "pkg-145",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-131": {
+      "license": "GPL-3.0",
+      "owner": "openforge",
+      "last_updated": "2026-04-24",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-139",
+          "1.2.0"
+        ],
+        [
+          "pkg-144",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-132": {
+      "license": "Apache-2.0",
+      "owner": "dataworks",
+      "last_updated": "2024-11-11",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-133": {
+      "license": "Proprietary",
+      "owner": "acme-labs",
+      "last_updated": "2025-12-20",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-149",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-134": {
+      "license": "BSD-3-Clause",
+      "owner": "redshift-dev",
+      "last_updated": "2025-11-21",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-141",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-135": {
+      "license": "MIT",
+      "owner": "openforge",
+      "last_updated": "2024-06-17",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-138",
+          "1.0.0"
+        ],
+        [
+          "pkg-143",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-136": {
+      "license": "BSD-3-Clause",
+      "owner": "openforge",
+      "last_updated": "2026-05-25",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-146",
+          "1.0.0"
+        ],
+        [
+          "pkg-142",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-137": {
+      "license": "BSD-3-Clause",
+      "owner": "openforge",
+      "last_updated": "2026-08-20",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-097",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-138": {
+      "license": "Proprietary",
+      "owner": "openforge",
+      "last_updated": "2024-01-27",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-146",
+          "3.0.0"
+        ],
+        [
+          "pkg-139",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-139": {
+      "license": "GPL-3.0",
+      "owner": "dataworks",
+      "last_updated": "2024-07-23",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-142",
+          "1.0.0"
+        ]
+      ]
+    },
+    "pkg-140": {
+      "license": "BSD-3-Clause",
+      "owner": "nimbus-io",
+      "last_updated": "2025-07-05",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-145",
+          "1.4.3"
+        ]
+      ]
+    },
+    "pkg-141": {
+      "license": "GPL-3.0",
+      "owner": "openforge",
+      "last_updated": "2024-01-09",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-148",
+          "1.0.0"
+        ],
+        [
+          "pkg-147",
+          "1.4.3"
+        ]
+      ]
+    },
+    "pkg-142": {
+      "license": "GPL-3.0",
+      "owner": "redshift-dev",
+      "last_updated": "2024-06-23",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-149",
+          "2.0.0"
+        ],
+        [
+          "pkg-147",
+          "1.4.3"
+        ]
+      ]
+    },
+    "pkg-143": {
+      "license": "BSD-3-Clause",
+      "owner": "coreteam",
+      "last_updated": "2023-10-02",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-149",
+          "2.1.1"
+        ],
+        [
+          "pkg-147",
+          "1.0.0"
+        ],
+        [
+          "pkg-073",
+          "1.2.0"
+        ]
+      ]
+    },
+    "pkg-144": {
+      "license": "BSD-3-Clause",
+      "owner": "nimbus-io",
+      "last_updated": "2026-08-05",
+      "deprecated": true,
+      "deps": [
+        [
+          "pkg-145",
+          "3.0.0"
+        ],
+        [
+          "pkg-146",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-145": {
+      "license": "BSD-3-Clause",
+      "owner": "coreteam",
+      "last_updated": "2024-02-27",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-147",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-146": {
+      "license": "GPL-3.0",
+      "owner": "openforge",
+      "last_updated": "2024-11-28",
+      "deprecated": false,
+      "deps": []
+    },
+    "pkg-147": {
+      "license": "GPL-3.0",
+      "owner": "dataworks",
+      "last_updated": "2024-08-14",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-148",
+          "3.0.0"
+        ]
+      ]
+    },
+    "pkg-148": {
+      "license": "BSD-3-Clause",
+      "owner": "dataworks",
+      "last_updated": "2026-04-15",
+      "deprecated": false,
+      "deps": [
+        [
+          "pkg-149",
+          "2.0.0"
+        ]
+      ]
+    },
+    "pkg-149": {
+      "license": "Proprietary",
+      "owner": "acme-labs",
+      "last_updated": "2024-10-13",
+      "deprecated": false,
+      "deps": []
+    }
+  },
+  "projects": {
+    "project-000": {
+      "deps": [
+        [
+          "pkg-113",
+          "3.0.0"
+        ],
+        [
+          "pkg-088",
+          "2.0.0"
+        ],
+        [
+          "pkg-076",
+          "3.0.0"
+        ]
+      ]
+    },
+    "project-001": {
+      "deps": [
+        [
+          "pkg-116",
+          "1.0.0"
+        ],
+        [
+          "pkg-077",
+          "1.2.0"
+        ],
+        [
+          "pkg-050",
+          "2.0.0"
+        ],
+        [
+          "pkg-098",
+          "2.1.1"
+        ],
+        [
+          "pkg-123",
+          "1.4.3"
+        ]
+      ]
+    },
+    "project-002": {
+      "deps": [
+        [
+          "pkg-075",
+          "2.1.1"
+        ],
+        [
+          "pkg-005",
+          "3.0.0"
+        ],
+        [
+          "pkg-101",
+          "2.0.0"
+        ],
+        [
+          "pkg-070",
+          "1.4.3"
+        ],
+        [
+          "pkg-002",
+          "1.2.0"
+        ],
+        [
+          "pkg-144",
+          "2.1.1"
+        ],
+        [
+          "pkg-012",
+          "1.4.3"
+        ]
+      ]
+    },
+    "project-003": {
+      "deps": [
+        [
+          "pkg-048",
+          "3.0.0"
+        ],
+        [
+          "pkg-064",
+          "3.0.0"
+        ],
+        [
+          "pkg-035",
+          "1.0.0"
+        ],
+        [
+          "pkg-024",
+          "1.4.3"
+        ]
+      ]
+    },
+    "project-004": {
+      "deps": [
+        [
+          "pkg-008",
+          "1.4.3"
+        ],
+        [
+          "pkg-148",
+          "3.0.0"
+        ],
+        [
+          "pkg-093",
+          "2.0.0"
+        ],
+        [
+          "pkg-033",
+          "1.2.0"
+        ],
+        [
+          "pkg-023",
+          "1.2.0"
+        ],
+        [
+          "pkg-075",
+          "1.2.0"
+        ]
+      ]
+    },
+    "project-005": {
+      "deps": [
+        [
+          "pkg-093",
+          "1.4.3"
+        ],
+        [
+          "pkg-135",
+          "3.0.0"
+        ],
+        [
+          "pkg-128",
+          "1.4.3"
+        ],
+        [
+          "pkg-069",
+          "1.0.0"
+        ],
+        [
+          "pkg-042",
+          "2.0.0"
+        ],
+        [
+          "pkg-065",
+          "1.0.0"
+        ],
+        [
+          "pkg-123",
+          "1.2.0"
+        ]
+      ]
+    },
+    "project-006": {
+      "deps": [
+        [
+          "pkg-101",
+          "2.0.0"
+        ],
+        [
+          "pkg-142",
+          "1.0.0"
+        ],
+        [
+          "pkg-093",
+          "1.4.3"
+        ],
+        [
+          "pkg-023",
+          "2.1.1"
+        ]
+      ]
+    },
+    "project-007": {
+      "deps": [
+        [
+          "pkg-116",
+          "2.1.1"
+        ],
+        [
+          "pkg-094",
+          "2.0.0"
+        ],
+        [
+          "pkg-067",
+          "3.0.0"
+        ]
+      ]
+    },
+    "project-008": {
+      "deps": [
+        [
+          "pkg-027",
+          "1.4.3"
+        ],
+        [
+          "pkg-059",
+          "2.1.1"
+        ],
+        [
+          "pkg-120",
+          "1.2.0"
+        ],
+        [
+          "pkg-006",
+          "3.0.0"
+        ],
+        [
+          "pkg-143",
+          "1.0.0"
+        ]
+      ]
+    },
+    "project-009": {
+      "deps": [
+        [
+          "pkg-118",
+          "1.0.0"
+        ],
+        [
+          "pkg-077",
+          "1.0.0"
+        ],
+        [
+          "pkg-104",
+          "1.2.0"
+        ],
+        [
+          "pkg-029",
+          "2.1.1"
+        ],
+        [
+          "pkg-035",
+          "1.2.0"
+        ],
+        [
+          "pkg-011",
+          "2.0.0"
+        ],
+        [
+          "pkg-009",
+          "2.0.0"
+        ],
+        [
+          "pkg-126",
+          "1.4.3"
+        ]
+      ]
+    },
+    "project-010": {
+      "deps": [
+        [
+          "pkg-138",
+          "1.0.0"
+        ],
+        [
+          "pkg-107",
+          "3.0.0"
+        ],
+        [
+          "pkg-039",
+          "1.4.3"
+        ],
+        [
+          "pkg-106",
+          "1.2.0"
+        ],
+        [
+          "pkg-025",
+          "2.0.0"
+        ],
+        [
+          "pkg-125",
+          "2.0.0"
+        ],
+        [
+          "pkg-104",
+          "1.2.0"
+        ],
+        [
+          "pkg-071",
+          "1.4.3"
+        ]
+      ]
+    },
+    "project-011": {
+      "deps": [
+        [
+          "pkg-094",
+          "1.0.0"
+        ],
+        [
+          "pkg-139",
+          "2.0.0"
+        ],
+        [
+          "pkg-091",
+          "1.4.3"
+        ]
+      ]
+    },
+    "project-012": {
+      "deps": [
+        [
+          "pkg-031",
+          "3.0.0"
+        ],
+        [
+          "pkg-116",
+          "3.0.0"
+        ],
+        [
+          "pkg-023",
+          "2.1.1"
+        ],
+        [
+          "pkg-054",
+          "1.0.0"
+        ],
+        [
+          "pkg-115",
+          "2.1.1"
+        ]
+      ]
+    },
+    "project-013": {
+      "deps": [
+        [
+          "pkg-085",
+          "2.1.1"
+        ],
+        [
+          "pkg-062",
+          "1.2.0"
+        ],
+        [
+          "pkg-032",
+          "1.0.0"
+        ]
+      ]
+    },
+    "project-014": {
+      "deps": [
+        [
+          "pkg-053",
+          "1.2.0"
+        ],
+        [
+          "pkg-055",
+          "1.2.0"
+        ],
+        [
+          "pkg-059",
+          "2.1.1"
+        ],
+        [
+          "pkg-084",
+          "1.4.3"
+        ],
+        [
+          "pkg-037",
+          "1.2.0"
+        ],
+        [
+          "pkg-000",
+          "1.0.0"
+        ],
+        [
+          "pkg-070",
+          "3.0.0"
+        ]
+      ]
+    },
+    "project-015": {
+      "deps": [
+        [
+          "pkg-033",
+          "1.2.0"
+        ],
+        [
+          "pkg-003",
+          "2.1.1"
+        ],
+        [
+          "pkg-091",
+          "1.4.3"
+        ]
+      ]
+    },
+    "project-016": {
+      "deps": [
+        [
+          "pkg-044",
+          "1.2.0"
+        ],
+        [
+          "pkg-067",
+          "3.0.0"
+        ],
+        [
+          "pkg-013",
+          "2.0.0"
+        ]
+      ]
+    },
+    "project-017": {
+      "deps": [
+        [
+          "pkg-029",
+          "2.0.0"
+        ],
+        [
+          "pkg-016",
+          "2.1.1"
+        ],
+        [
+          "pkg-121",
+          "1.2.0"
+        ],
+        [
+          "pkg-114",
+          "2.1.1"
+        ],
+        [
+          "pkg-092",
+          "1.0.0"
+        ],
+        [
+          "pkg-131",
+          "3.0.0"
+        ],
+        [
+          "pkg-027",
+          "3.0.0"
+        ]
+      ]
+    },
+    "project-018": {
+      "deps": [
+        [
+          "pkg-077",
+          "3.0.0"
+        ],
+        [
+          "pkg-117",
+          "1.0.0"
+        ],
+        [
+          "pkg-007",
+          "2.0.0"
+        ],
+        [
+          "pkg-015",
+          "3.0.0"
+        ],
+        [
+          "pkg-122",
+          "2.0.0"
+        ],
+        [
+          "pkg-102",
+          "1.0.0"
+        ],
+        [
+          "pkg-109",
+          "1.0.0"
+        ]
+      ]
+    },
+    "project-019": {
+      "deps": [
+        [
+          "pkg-037",
+          "2.1.1"
+        ],
+        [
+          "pkg-016",
+          "3.0.0"
+        ],
+        [
+          "pkg-032",
+          "1.4.3"
+        ],
+        [
+          "pkg-070",
+          "2.0.0"
+        ],
+        [
+          "pkg-149",
+          "2.1.1"
+        ]
+      ]
+    },
+    "project-020": {
+      "deps": [
+        [
+          "pkg-075",
+          "3.0.0"
+        ],
+        [
+          "pkg-116",
+          "1.2.0"
+        ],
+        [
+          "pkg-129",
+          "2.0.0"
+        ],
+        [
+          "pkg-110",
+          "2.0.0"
+        ],
+        [
+          "pkg-025",
+          "1.2.0"
+        ],
+        [
+          "pkg-029",
+          "2.0.0"
+        ],
+        [
+          "pkg-141",
+          "1.4.3"
+        ]
+      ]
+    },
+    "project-021": {
+      "deps": [
+        [
+          "pkg-102",
+          "1.4.3"
+        ],
+        [
+          "pkg-106",
+          "1.2.0"
+        ],
+        [
+          "pkg-024",
+          "3.0.0"
+        ],
+        [
+          "pkg-080",
+          "2.0.0"
+        ],
+        [
+          "pkg-109",
+          "1.0.0"
+        ],
+        [
+          "pkg-065",
+          "1.0.0"
+        ]
+      ]
+    },
+    "project-022": {
+      "deps": [
+        [
+          "pkg-023",
+          "3.0.0"
+        ],
+        [
+          "pkg-110",
+          "3.0.0"
+        ],
+        [
+          "pkg-024",
+          "1.4.3"
+        ]
+      ]
+    },
+    "project-023": {
+      "deps": [
+        [
+          "pkg-142",
+          "3.0.0"
+        ],
+        [
+          "pkg-015",
+          "1.0.0"
+        ],
+        [
+          "pkg-143",
+          "2.0.0"
+        ],
+        [
+          "pkg-084",
+          "1.4.3"
+        ]
+      ]
+    },
+    "project-024": {
+      "deps": [
+        [
+          "pkg-108",
+          "1.2.0"
+        ],
+        [
+          "pkg-013",
+          "1.2.0"
+        ],
+        [
+          "pkg-073",
+          "3.0.0"
+        ],
+        [
+          "pkg-079",
+          "2.0.0"
+        ],
+        [
+          "pkg-090",
+          "1.2.0"
+        ],
+        [
+          "pkg-026",
+          "1.0.0"
+        ],
+        [
+          "pkg-147",
+          "1.4.3"
+        ],
+        [
+          "pkg-129",
+          "2.1.1"
+        ]
+      ]
+    },
+    "project-025": {
+      "deps": [
+        [
+          "pkg-029",
+          "2.1.1"
+        ],
+        [
+          "pkg-071",
+          "2.1.1"
+        ],
+        [
+          "pkg-146",
+          "2.1.1"
+        ],
+        [
+          "pkg-057",
+          "3.0.0"
+        ],
+        [
+          "pkg-109",
+          "3.0.0"
+        ]
+      ]
+    },
+    "project-026": {
+      "deps": [
+        [
+          "pkg-006",
+          "1.4.3"
+        ],
+        [
+          "pkg-068",
+          "1.0.0"
+        ],
+        [
+          "pkg-007",
+          "1.2.0"
+        ],
+        [
+          "pkg-046",
+          "1.2.0"
+        ],
+        [
+          "pkg-069",
+          "2.1.1"
+        ],
+        [
+          "pkg-079",
+          "3.0.0"
+        ],
+        [
+          "pkg-086",
+          "2.0.0"
+        ]
+      ]
+    },
+    "project-027": {
+      "deps": [
+        [
+          "pkg-036",
+          "3.0.0"
+        ],
+        [
+          "pkg-007",
+          "2.1.1"
+        ],
+        [
+          "pkg-023",
+          "1.2.0"
+        ]
+      ]
+    },
+    "project-028": {
+      "deps": [
+        [
+          "pkg-107",
+          "3.0.0"
+        ],
+        [
+          "pkg-116",
+          "1.4.3"
+        ],
+        [
+          "pkg-087",
+          "2.1.1"
+        ],
+        [
+          "pkg-040",
+          "2.1.1"
+        ],
+        [
+          "pkg-094",
+          "1.0.0"
+        ],
+        [
+          "pkg-079",
+          "1.0.0"
+        ]
+      ]
+    },
+    "project-029": {
+      "deps": [
+        [
+          "pkg-040",
+          "2.0.0"
+        ],
+        [
+          "pkg-012",
+          "3.0.0"
+        ],
+        [
+          "pkg-020",
+          "2.0.0"
+        ],
+        [
+          "pkg-069",
+          "2.0.0"
+        ],
+        [
+          "pkg-098",
+          "2.1.1"
+        ]
+      ]
+    },
+    "project-030": {
+      "deps": [
+        [
+          "pkg-113",
+          "2.0.0"
+        ],
+        [
+          "pkg-106",
+          "1.0.0"
+        ],
+        [
+          "pkg-069",
+          "1.4.3"
+        ],
+        [
+          "pkg-055",
+          "3.0.0"
+        ],
+        [
+          "pkg-131",
+          "3.0.0"
+        ],
+        [
+          "pkg-029",
+          "2.1.1"
+        ],
+        [
+          "pkg-088",
+          "2.0.0"
+        ]
+      ]
+    },
+    "project-031": {
+      "deps": [
+        [
+          "pkg-078",
+          "1.4.3"
+        ],
+        [
+          "pkg-011",
+          "1.2.0"
+        ],
+        [
+          "pkg-056",
+          "1.2.0"
+        ],
+        [
+          "pkg-101",
+          "1.4.3"
+        ],
+        [
+          "pkg-014",
+          "1.4.3"
+        ],
+        [
+          "pkg-001",
+          "1.4.3"
+        ],
+        [
+          "pkg-052",
+          "1.0.0"
+        ]
+      ]
+    },
+    "project-032": {
+      "deps": [
+        [
+          "pkg-127",
+          "1.2.0"
+        ],
+        [
+          "pkg-110",
+          "2.0.0"
+        ],
+        [
+          "pkg-044",
+          "2.1.1"
+        ]
+      ]
+    },
+    "project-033": {
+      "deps": [
+        [
+          "pkg-058",
+          "1.0.0"
+        ],
+        [
+          "pkg-128",
+          "2.0.0"
+        ],
+        [
+          "pkg-143",
+          "1.0.0"
+        ],
+        [
+          "pkg-090",
+          "1.4.3"
+        ],
+        [
+          "pkg-018",
+          "2.1.1"
+        ],
+        [
+          "pkg-101",
+          "2.0.0"
+        ],
+        [
+          "pkg-010",
+          "2.1.1"
+        ],
+        [
+          "pkg-111",
+          "2.0.0"
+        ]
+      ]
+    },
+    "project-034": {
+      "deps": [
+        [
+          "pkg-106",
+          "3.0.0"
+        ],
+        [
+          "pkg-074",
+          "1.4.3"
+        ],
+        [
+          "pkg-029",
+          "1.0.0"
+        ],
+        [
+          "pkg-103",
+          "2.0.0"
+        ],
+        [
+          "pkg-005",
+          "1.0.0"
+        ],
+        [
+          "pkg-083",
+          "1.2.0"
+        ],
+        [
+          "pkg-043",
+          "2.0.0"
+        ],
+        [
+          "pkg-117",
+          "2.1.1"
+        ]
+      ]
+    },
+    "project-035": {
+      "deps": [
+        [
+          "pkg-134",
+          "1.4.3"
+        ],
+        [
+          "pkg-020",
+          "1.2.0"
+        ],
+        [
+          "pkg-101",
+          "1.0.0"
+        ],
+        [
+          "pkg-079",
+          "2.1.1"
+        ],
+        [
+          "pkg-086",
+          "3.0.0"
+        ],
+        [
+          "pkg-056",
+          "1.0.0"
+        ]
+      ]
+    },
+    "project-036": {
+      "deps": [
+        [
+          "pkg-130",
+          "1.2.0"
+        ],
+        [
+          "pkg-049",
+          "1.2.0"
+        ],
+        [
+          "pkg-089",
+          "2.1.1"
+        ],
+        [
+          "pkg-037",
+          "1.2.0"
+        ],
+        [
+          "pkg-060",
+          "3.0.0"
+        ],
+        [
+          "pkg-026",
+          "1.0.0"
+        ],
+        [
+          "pkg-065",
+          "1.2.0"
+        ],
+        [
+          "pkg-115",
+          "1.4.3"
+        ]
+      ]
+    },
+    "project-037": {
+      "deps": [
+        [
+          "pkg-126",
+          "2.0.0"
+        ],
+        [
+          "pkg-118",
+          "1.0.0"
+        ],
+        [
+          "pkg-144",
+          "2.0.0"
+        ],
+        [
+          "pkg-148",
+          "2.0.0"
+        ],
+        [
+          "pkg-114",
+          "3.0.0"
+        ],
+        [
+          "pkg-082",
+          "1.4.3"
+        ],
+        [
+          "pkg-080",
+          "1.4.3"
+        ],
+        [
+          "pkg-038",
+          "2.1.1"
+        ],
+        [
+          "pkg-098",
+          "1.0.0"
+        ]
+      ]
+    },
+    "project-038": {
+      "deps": [
+        [
+          "pkg-090",
+          "1.4.3"
+        ],
+        [
+          "pkg-129",
+          "2.0.0"
+        ],
+        [
+          "pkg-018",
+          "2.0.0"
+        ]
+      ]
+    },
+    "project-039": {
+      "deps": [
+        [
+          "pkg-014",
+          "1.0.0"
+        ],
+        [
+          "pkg-094",
+          "3.0.0"
+        ],
+        [
+          "pkg-073",
+          "1.0.0"
+        ]
+      ]
+    }
+  }
+}

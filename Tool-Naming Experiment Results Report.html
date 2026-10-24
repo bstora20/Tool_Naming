@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tool-Naming Experiment: Results Report</title>
+  <style>
+/* Base Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Root Variables - Light Mode */
+:root {
+  
+    --bg-color: #ffffff;
+    --text-color: #37352f;
+    --muted-color: #787774;
+    --heading-color: #37352f;
+    --link-color: #37352f;
+    --border-color: #e9e9e7;
+    --code-bg: #f7f6f3;
+    --accent-color: #2eaadc;
+  
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    
+    --bg-color: #ffffff;
+    --text-color: #37352f;
+    --muted-color: #787774;
+    --heading-color: #37352f;
+    --link-color: #37352f;
+    --border-color: #e9e9e7;
+    --code-bg: #f7f6f3;
+    --accent-color: #2eaadc;
+  
+  }
+}
+
+/* Body */
+body {
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Article Container */
+article {
+  max-width: 100%;
+}
+
+/* Typography - Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+  color: var(--heading-color);
+  margin-top: 1.75em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 2.25em;
+  margin-top: 0;
+  padding-bottom: 0.5em;
+  border-bottom: 2px solid var(--border-color);
+}
+
+h2 {
+  font-size: 1.65em;
+  padding-bottom: 0.35em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+h3 { font-size: 1.35em; }
+h4 { font-size: 1.15em; }
+h5 { font-size: 1em; }
+h6 { font-size: 0.9em; color: var(--muted-color); }
+
+/* Paragraphs */
+p {
+  margin: 1.25em 0;
+}
+
+/* Links */
+a {
+  color: var(--link-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Strong and Emphasis */
+strong { font-weight: 600; }
+em { font-style: italic; }
+
+/* Inline Code */
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  background-color: var(--code-bg);
+  color: var(--text-color);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  word-break: break-word;
+}
+
+/* Code Blocks */
+pre {
+  background-color: var(--code-bg);
+  padding: 1.25rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1.5em 0;
+  line-height: 1.5;
+}
+
+pre code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 14px;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  line-height: inherit;
+  white-space: pre;
+  word-break: normal;
+}
+
+/* Line Numbers for Code Blocks */
+
+
+/* Blockquotes */
+blockquote {
+  border-left: 4px solid var(--accent-color);
+  margin: 1.5em 0;
+  padding: 0.75em 1.25em;
+  color: var(--muted-color);
+  background-color: color-mix(in srgb, var(--code-bg) 50%, transparent);
+  border-radius: 0 8px 8px 0;
+}
+
+blockquote p {
+  margin: 0.5em 0;
+}
+
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+
+/* Lists */
+ul, ol {
+  margin: 1.25em 0;
+  padding-left: 1.75em;
+}
+
+li {
+  margin: 0.35em 0;
+}
+
+li > ul, li > ol {
+  margin: 0.35em 0;
+}
+
+/* Task Lists */
+ul.task-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul.task-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.95em;
+}
+
+thead {
+  background-color: var(--code-bg);
+}
+
+th, td {
+  border: 1px solid var(--border-color);
+  padding: 0.75em 1em;
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+  color: var(--heading-color);
+}
+
+tbody tr:nth-child(even) {
+  background-color: color-mix(in srgb, var(--code-bg) 30%, transparent);
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1em 0;
+}
+
+/* Horizontal Rules */
+hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 2.5em 0;
+}
+
+/* Metadata */
+.metadata {
+  color: var(--muted-color);
+  font-size: 0.875em;
+  margin-bottom: 2em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75em;
+  align-items: center;
+}
+
+.metadata .path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background-color: var(--code-bg);
+  padding: 0.25em 0.5em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.metadata .status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.2em 0.6em;
+  border-radius: 9999px;
+  font-size: 0.8em;
+  font-weight: 500;
+  background-color: var(--code-bg);
+}
+
+.metadata .tags {
+  display: flex;
+  gap: 0.35em;
+}
+
+.metadata .tag {
+  padding: 0.15em 0.5em;
+  border-radius: 4px;
+  font-size: 0.8em;
+  background-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
+  color: var(--accent-color);
+}
+
+/* Table of Contents */
+.toc {
+  background-color: var(--code-bg);
+  padding: 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 2em;
+}
+
+.toc h2 {
+  margin-top: 0;
+  border-bottom: none;
+  font-size: 1rem;
+  margin-bottom: 0.75em;
+}
+
+.toc ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.toc ul ul {
+  padding-left: 1.25em;
+}
+
+.toc li {
+  margin: 0.35em 0;
+}
+
+.toc a {
+  color: var(--text-color);
+}
+
+.toc a:hover {
+  color: var(--link-color);
+}
+
+/* Print Styles */
+@media print {
+  body {
+    max-width: none;
+    padding: 0;
+    background: white;
+    color: black;
+  }
+
+  a { color: inherit; }
+
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  h1, h2, h3 { page-break-after: avoid; }
+  pre, table, blockquote, img { page-break-inside: avoid; }
+}
+
+/* Syntax Highlighting - github */
+
+    .hljs-comment, .hljs-quote { color: #6e7781; font-style: italic; }
+    .hljs-keyword, .hljs-selector-tag { color: #cf222e; font-weight: 500; }
+    .hljs-string, .hljs-attr { color: #0a3069; }
+    .hljs-number, .hljs-literal { color: #0550ae; }
+    .hljs-function, .hljs-title { color: #8250df; }
+    .hljs-built_in, .hljs-type { color: #0550ae; }
+    .hljs-class, .hljs-title.class_ { color: #953800; }
+    .hljs-variable, .hljs-template-variable { color: #953800; }
+    .hljs-meta { color: #0550ae; }
+    .hljs-tag { color: #116329; }
+  
+
+/* Custom Template Styles */
+
+    h1, h2, h3 {
+      font-weight: 700;
+      margin-top: 2em;
+    }
+    h1 { font-size: 2.5em; border-bottom: none; }
+    h2 { font-size: 1.875em; border-bottom: none; }
+    h3 { font-size: 1.5em; }
+    a {
+      text-decoration: underline;
+      text-decoration-color: color-mix(in srgb, var(--link-color) 50%, transparent);
+    }
+    a:hover {
+      background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+    }
+    code:not(pre code) {
+      color: #eb5757;
+      background: rgba(135,131,120,0.15);
+    }
+    pre {
+      border-radius: 4px;
+    }
+    blockquote {
+      font-size: 1.2em;
+      border-left-width: 3px;
+      border-left-color: var(--text-color);
+      background: transparent;
+    }
+    table {
+      border: none;
+    }
+    th, td {
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+    }
+    th {
+      background: transparent;
+      font-weight: 600;
+      text-transform: none;
+    }
+  </style>
+</head>
+<body>
+  <article>
+    <h1>Tool-Naming Experiment: Results Report</h1>
+    <div class="metadata"><span class="path">/research/tool-naming-experiment/tool-naming-experiment.md</span></div>
+    <h1>Tool-Naming Experiment: Results Report</h1>
+<p>This report explains an experiment testing how an AI model's ability to use tools depends on what those tools are <em>named</em>, and on <em>how</em> the model is allowed to call them. It's written in two parts:</p>
+<ul>
+<li><strong>Overview</strong> — a plain-language summary of what was tested and what we found, written for readers interested in AI who may not know all the jargon.</li>
+<li><strong>Methodology</strong> — exactly how the test world, naming conditions, interfaces, and tasks were built.</li>
+<li><strong>Detailed Results</strong> — full data tables (success rates, error-tag breakdowns, per-tier breakdowns).</li>
+<li><strong>Caveats and Next Steps</strong> — how much weight to put on these results, and what to test next.</li>
+</ul>
+<h3>Overview</h3>
+<blockquote>
+<p><strong>Note on data correction</strong>: After the initial version of this report was written, a scoring bug was found and fixed (see Methodology for details). This version reflects the corrected results. The bug caused the model's genuinely correct answers to short free-text questions (e.g. "What license does pkg-113 use?") to be marked wrong when phrased as a full sentence ("pkg-113 uses the GPL-3.0 license.") instead of the bare value ("GPL-3.0"). Fixing this raised overall success from 48.5% to 64.5% and changed none of the directional findings below — if anything, it makes the central pattern clearer.</p>
+</blockquote>
+<h4>What this experiment was about</h4>
+<p>Modern AI assistants (like Claude or GPT models) often don't just answer questions directly — they're given a set of <strong>"tools"</strong> they can call to look things up, similar to how a person might use <code>ls</code>, <code>grep</code>, or <code>cat</code> commands in a Unix terminal to browse files. The AI reads a short "manual" describing each tool, then decides which tool to call, with what arguments, to answer a question.</p>
+<p>A natural question for anyone building these systems is: <strong>does it matter what you <em>name</em> the tools?</strong></p>
+<p>If you give a tool a name the AI has seen a million times during its training (like <code>grep</code> for "search text") versus a name it's never seen before (like <code>qovrex</code>), does that change how well it uses the tool — even if the tool manual explains exactly what the tool does either way?</p>
+<p>This experiment tested that question, and paired it with a second question: <strong>does the naming effect depend on <em>how</em> the AI is allowed to call tools</strong> — one at a time in a back-and-forth conversation, versus writing a whole script up front, versus typing a Unix-style command line?</p>
+<h4>How the test worked (in plain terms)</h4>
+<p>We built a small fake "world" — a dependency graph loosely modeled on a software package manager (think: npm or pip), with 40 fictional "projects" that depend on some of 150 fictional "packages," including realistic messiness like circular dependencies and version conflicts. This fake world lives entirely in a file the AI never sees directly — it can only learn about it by calling tools.</p>
+<p>We gave the AI 24 questions about this world, split into three difficulty levels:</p>
+<ul>
+<li><strong>Tier 1 (easy)</strong>: simple lookups, e.g., "what license does package X use?"</li>
+<li><strong>Tier 2 (medium)</strong>: lookups that require searching/counting across many things, e.g., "how many projects depend on package Y?"</li>
+<li><strong>Tier 3 (hard)</strong>: questions that require combining two separate lookups, e.g., "which projects depend on <em>any</em> MIT-licensed package?" (first you must figure out which packages are MIT-licensed, <em>then</em> cross-reference that against every project's dependency list.)</li>
+</ul>
+<p>We tested three <strong>naming conditions</strong> — three different sets of names for the same five underlying tools:</p>
+<ul>
+<li><strong>Condition A ("A-full")</strong>: tools are named exactly like real Unix commands — <code>ls</code>, <code>grep</code>, <code>find</code>, <code>cat</code>, <code>wc</code> — names the AI has almost certainly seen thousands of times during training.</li>
+<li><strong>Condition B</strong>: tools are given sensible, descriptive but non-standard names — <code>list_entries</code>, <code>search_content</code>, <code>find_by_pattern</code>, <code>read_record</code>, <code>count_matches</code> — names a human would understand immediately, but that don't match any specific well-known tool.</li>
+<li><strong>Condition C</strong>: tools are given random, made-up names — pronounceable but meaningless, with no hint about what they do from the name alone.</li>
+</ul>
+<p>Crucially, in every condition the AI is given a full, accurate manual explaining what each tool does — so if naming doesn't matter, performance should be roughly equal across A/B/C. If naming <em>does</em> matter — perhaps because familiar names let the model lean on things it already "knows" from training, beyond what's written in the manual — we'd expect to see differences.</p>
+<p>We also tested three <strong>interface styles</strong> — three different ways the AI is allowed to call these tools:</p>
+<ul>
+<li><strong>Sequential (tool-calling)</strong>: the AI calls one tool, sees the result, calls another, back and forth — like a normal conversation — up to several turns.</li>
+<li><strong>Scripted</strong>: the AI writes one Python-like script in a single shot that calls the tools in sequence, with one chance to fix it if it errors.</li>
+<li><strong>Shell</strong>: the AI writes one Unix-style command line in a single shot (optionally piping output from one tool into another, like <code>ls | grep foo | wc</code>), with one chance to fix it if it errors.</li>
+</ul>
+<p>Crossing 3 naming conditions × 3 interfaces × 24 tasks × 3 repeated trials gave us 648 total AI "attempts," each scored automatically as correct or incorrect against a known right answer.</p>
+<h4>The headline finding</h4>
+<p><strong>Naming barely matters for two of the three interfaces — but it matters a lot for the Unix-shell-style interface.</strong></p>
+<ul>
+<li>In the <strong>sequential (back-and-forth)</strong> and <strong>scripted (write-a-script)</strong> interfaces, success rates were only mildly affected by naming, and if anything slightly <em>favored</em> less-familiar names (a small, likely-noise-driven effect, not a meaningful disadvantage).</li>
+<li>In the <strong>shell (type-a-command-line)</strong> interface, success dropped sharply and consistently as names became less familiar: <strong>61.1% success with real Unix names → 45.8% with sensible names → 41.7% with random names.</strong></li>
+</ul>
+<p>In other words: <strong>giving a tool a familiar name only seems to help when it's <em>also</em> being used in a familiar way.</strong> Typing <code>ls | grep foo | wc</code> works well because the AI has seen that exact pattern countless times — the name and the "grammar" (how you combine commands with pipes) are both familiar together. But calling a function named <code>list_entries(...)</code> doesn't get a special boost just from having a human-readable name, because there's no deep well of "function-calling muscle memory" the same way there is for Unix command-line idioms.</p>
+<p>When we dug into <em>why</em> performance dropped under unfamiliar shell names, the answer was clear: the AI simply guessed the wrong command names or mangled the pipe syntax far more often (25 and 24 such mistakes out of 72 attempts for the sensible- and random-name conditions, versus only 5 for real Unix names) — not that it misunderstood the task itself.</p>
+<p>A second, independent finding: the hardest "Tier 3" questions (the ones requiring two combined lookups) were difficult everywhere, but especially so for the shell interface, which simply <strong>cannot express a two-step combined lookup</strong> in its simplified command grammar — regardless of naming, performance for these tasks flatlined around 12.5% in the shell interface, while Tier 1 and Tier 2 questions in the shell interface still showed the full naming-driven decline described above. This is a structural limitation of what counts as "a single shell command" in this test, not something naming can fix.</p>
+<h4>Why this matters</h4>
+<p>This result lines up with a specific hypothesis: it's not naming <em>alone</em> that creates a training-familiarity advantage — it's naming <em>combined with</em> a familiar way of composing calls together. If you're designing tool-use interfaces for AI agents, the practical takeaway is that <strong>tool names probably matter most when paired with syntax/calling-conventions the model already deeply knows</strong> (like Unix pipes), and matter much less when the calling convention itself is already novel to the model (like a bespoke function-calling API) — in which case the manual you give it seems to do most of the work regardless of what you name things.</p>
+<h3>Methodology</h3>
+<h4>The test world</h4>
+<p>A synthetic dependency graph was generated deterministically (fixed random seed <code>42</code>): 40 fictional software "projects," each depending on some subset of 150 fictional "packages." The generator deliberately injects realistic messiness: 2 forced circular dependencies and 3 forced version conflicts, so that some tasks require handling edge cases rather than a perfectly clean tree.</p>
+<p>This graph is exposed to the AI model only through a <strong>virtual file system</strong> layer, which maps it onto Unix-like paths — e.g. <code>/projects/&lt;name&gt;/deps.txt</code> (a text file listing a project's dependencies) and <code>/packages/&lt;name&gt;/meta.json</code> (a JSON file with package metadata like license and version). The model never sees the underlying graph data structure directly; it can only learn about the world by calling tools (or typing shell commands) that read from this virtual file system.</p>
+<h4>The five shared tools ("primitives")</h4>
+<p>Regardless of naming condition, there are exactly five underlying capabilities available, each behaving identically across all conditions — only the <em>name</em> shown to the model changes:</p>
+<table>
+  <thead>
+    <tr>
+      <th>Logical ID</th>
+      <th>Behavior (same in every condition)</th>
+      <th>"A-full" name (real Unix)</th>
+      <th>"B" name (descriptive)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>P1</td>
+      <td>List entries in a directory</td>
+      <td><code>ls</code></td>
+      <td><code>list_entries</code></td>
+    </tr>
+    <tr>
+      <td>P2</td>
+      <td>Find files by name pattern</td>
+      <td><code>find</code></td>
+      <td><code>find_by_pattern</code></td>
+    </tr>
+    <tr>
+      <td>P3</td>
+      <td>Search file contents by pattern</td>
+      <td><code>grep</code></td>
+      <td><code>search_content</code></td>
+    </tr>
+    <tr>
+      <td>P4</td>
+      <td>Read a file's full contents</td>
+      <td><code>cat</code></td>
+      <td><code>read_record</code></td>
+    </tr>
+    <tr>
+      <td>P5</td>
+      <td>Count matching lines</td>
+      <td><code>wc</code></td>
+      <td><code>count_matches</code></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Condition C</strong> ("random names") uses pronounceable but semantically meaningless names, generated with a fixed random seed and length-matched to the Condition B names, so that condition C differs from B primarily in <em>familiarity</em>, not in surface length or structure.</p>
+<p>In every condition, the model is given a complete, accurate manual (a short description of each tool, its arguments, and what it returns) before being asked any task — so any performance difference between conditions reflects something beyond what's written down, presumably prior training exposure to the name itself.</p>
+<h4>The three interface styles ("harnesses")</h4>
+<ol>
+<li><strong>Sequential</strong> — a standard multi-turn tool-calling loop (similar to typical "agentic" AI assistants). The model calls one tool, receives the result as a new message, and can call another tool or give a final answer, for up to <strong>15 turns</strong> (raised from an initial cap of 8 — see "Known issues identified and fixed" below).</li>
+<li><strong>Scripted</strong> — the model writes a single Python-like script in one shot, calling the five tools as if they were ordinary functions (e.g., <code>list_entries(&quot;/projects&quot;)</code>). The script runs in a restricted sandbox (no file/network access, no <code>eval</code>/<code>exec</code>, limited builtins). If the script errors, the model gets exactly <strong>one repair attempt</strong> before the trial is scored as failed.</li>
+<li><strong>Shell</strong> — the model writes a single Unix-style command line in one shot (e.g., <code>find /packages &quot;*/meta.json&quot; | grep MIT | wc</code>), executed by a simplified pipeline interpreter that supports exactly one "source" command optionally piped through one or more filter/count stages. Like the scripted interface, there is exactly <strong>one repair attempt</strong> if the first command errors.</li>
+</ol>
+<p>Both scripted and shell are deliberately "single-shot" (one attempt + one repair) specifically so they can be compared against each other on equal footing — this isolates whether familiar Unix-pipe <em>grammar</em> (shell) provides a benefit beyond familiar <em>naming</em> alone (scripted), since both interfaces share the same turn structure and differ mainly in calling convention.</p>
+<h4>Tasks and difficulty tiers</h4>
+<p>24 hand-written tasks, 8 per tier:</p>
+<ul>
+<li><strong>Tier 1</strong> — single-hop lookups (e.g., "What license does package X use?")</li>
+<li><strong>Tier 2</strong> — lookups requiring search/aggregation across many items (e.g., "How many projects depend on package Y?")</li>
+<li><strong>Tier 3</strong> — composed, multi-step lookups requiring two independent queries to be combined (e.g., "Which projects depend on at least one MIT-licensed package?" — requires first identifying all MIT-licensed packages, then cross-referencing every project's dependency list against that set).</li>
+</ul>
+<h4>Scoring</h4>
+<p>Each task has a ground-truth "oracle" answer computed directly from the underlying graph data (independent of the tools/VFS, to avoid circular validation). The model's free-text final answer is scored with a lenient parser that tolerates prose, reordering of list items, and extraneous words, but requires the substantive content to match exactly (e.g., a list answer must contain <em>all</em> correct items, not a subset). The scorer handles four answer types: <code>list</code>, <code>int</code>, <code>bool</code>, and <code>str</code>.</p>
+<h5>Scoring bug found and fixed</h5>
+<p>While reviewing the unexpectedly high overall failure rate, a bug was found in the <code>str</code>-type scoring path (used by 6 of the 24 tasks — short factual lookups like license, owner, and date fields). The original implementation required the model's <strong>entire</strong> response, after light normalization, to equal the oracle value exactly. This meant a genuinely correct answer phrased as a sentence — e.g. <code>&quot;pkg-113 uses the GPL-3.0 license.&quot;</code> — was scored as <strong>incorrect</strong> against the oracle <code>&quot;GPL-3.0&quot;</code>, purely because the full sentence doesn't equal the bare value. The other three answer types (<code>list</code>, <code>int</code>, <code>bool</code>) already extracted the relevant content from surrounding prose; <code>str</code> did not.</p>
+<p><strong>Fix</strong>: the <code>str</code> scorer now first checks for an exact normalized match (preserving prior behavior), and if that fails, searches for the oracle value as a whole-word/whole-token substring within the normalized response (e.g. <code>&quot;gpl-3.0 license&quot;</code> contains <code>&quot;gpl-3.0&quot;</code> as a bounded token, but <code>&quot;gpl-3.0.1&quot;</code> or <code>&quot;not-gpl-3.0ish&quot;</code> would not falsely match, since the search uses word boundaries). This mirrors the leniency already applied to the other three answer types.</p>
+<p><strong>Validation of the fix</strong>:</p>
+<ul>
+<li><code>tests/test_scoring.py</code> (5 existing scoring unit tests) continue to pass unchanged after the fix.</li>
+<li>The entire existing 648-trial dataset was <strong>re-scored offline</strong> using the fixed scorer against the exact same saved model responses (no new model calls were made — the underlying <code>str</code>-type questions and all other data are unchanged). This produced 104 trials flipping from incorrect to correct, and <strong>zero</strong> trials flipping from correct to incorrect, confirming the fix is strictly a correction of false negatives, not a change in scoring strictness. Overall measured success rose from 48.5% to 64.5%. All results tables in this report reflect the corrected scoring.</li>
+</ul>
+<h4>Model and execution details</h4>
+<ul>
+<li><strong>Model</strong>: <code>gpt-6-luna</code>, accessed via a custom Anthropic-Messages-API-compatible proxy ("Luna"), not a native Anthropic endpoint.</li>
+<li><strong>Experimental design</strong>: 24 tasks × 3 interfaces × 3 "core" naming conditions (A-full, B, C) × 3 repeated seeds = <strong>648 total trials</strong>.</li>
+<li>Each trial logs: tokens used (prompt + completion), number of turns/calls, wall-clock time, final answer, correctness, and (if incorrect) an <strong>error tag</strong> classifying the failure (e.g., <code>invalid_name</code> for calling a tool/command that doesn't exist, <code>wrong_args</code> for malformed arguments, <code>primitive_error</code> for a valid call with bad input values, <code>timeout</code> for exceeding the turn/attempt budget, or no tag at all for a plain wrong-answer).</li>
+</ul>
+<h4>Known issues identified and fixed before this run</h4>
+<p>Two genuine implementation limitations were found and corrected prior to running this experiment, both confirmed via a smaller pilot run before committing to the full 648-trial run:</p>
+<ol>
+<li><strong>Sequential turn budget too tight</strong>: The original 8-turn cap was cutting off the model mid-enumeration on harder tasks. Raised to 15 turns. Confirmed fix: a Tier-3 task that previously failed under the old cap succeeded in 6 turns post-fix.</li>
+<li><strong>Scripted sandbox blocked regex/JSON parsing entirely</strong>: The sandbox's security filter blocked any <code>import</code> statement, which incidentally blocked legitimate use of Python's <code>re</code> (regex) and <code>json</code> modules — tools genuinely needed for some tasks (e.g., parsing a package's metadata file to check its license field). Fixed by exposing safe, read-only facades for the handful of needed functions (<code>re.search</code>, <code>re.match</code>, <code>re.findall</code>, <code>re.split</code>, <code>json.loads</code>) directly in the sandbox's execution environment, without opening up broader import capability. Confirmed via a live diagnostic: a model-generated script using both <code>json.loads(...)</code> and <code>re.search(...)</code> ran successfully.</li>
+</ol>
+<p>A third limitation — the <strong>shell interface's inability to express two-step "join" queries</strong> in its simplified single-pipeline grammar — was identified but deliberately <strong>not</strong> fixed, since doing so would change what "the shell interface" means for the purposes of this study (it is intended to represent a constrained, linear Unix-pipe style of composition, not an arbitrarily expressive scripting environment). This is treated as a structural property of the condition being tested, not a bug.</p>
+<h3>Detailed Results</h3>
+<blockquote>
+<p>Reflects corrected scoring (see Methodology → "Scoring bug found and fixed"). All numbers below are from the rescored dataset (<code>results/full_run_n3_rescored.jsonl</code>), produced by re-running the fixed scorer against the same 648 saved model responses — no new model calls were needed.</p>
+</blockquote>
+<h4>Overall success rate by interface × naming condition</h4>
+<p>(n = 72 trials per cell: 24 tasks × 3 seeds)</p>
+<table>
+  <thead>
+    <tr>
+      <th>Interface</th>
+      <th>A-full (Unix names)</th>
+      <th>B (sensible names)</th>
+      <th>C (random names)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Sequential (multi-turn tool-calling)</td>
+      <td>76.4%</td>
+      <td>77.8%</td>
+      <td>83.3%</td>
+    </tr>
+    <tr>
+      <td>Scripted (one-shot script)</td>
+      <td>61.1%</td>
+      <td>65.3%</td>
+      <td>68.1%</td>
+    </tr>
+    <tr>
+      <td>Shell (one-shot command line)</td>
+      <td><strong>61.1%</strong></td>
+      <td><strong>45.8%</strong></td>
+      <td><strong>41.7%</strong></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Reading this table</strong>: Sequential and scripted show no naming-driven <em>disadvantage</em> — differences are modest and, if anything, run in the opposite direction (slightly higher success with less-familiar names, most plausibly noise at this sample size rather than a real "unfamiliar names help" effect). Shell shows a strong, monotonic, ~19-percentage-point decline from familiar to unfamiliar names — the central finding of this study.</p>
+<h4>Why shell drops: error-tag breakdown</h4>
+<table>
+  <thead>
+    <tr>
+      <th>Interface / Condition</th>
+      <th>Plain wrong answer</th>
+      <th><code>invalid_name</code> (bad command/syntax)</th>
+      <th><code>primitive_error</code></th>
+      <th><code>runtime_error</code></th>
+      <th><code>timeout</code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Shell / A-full</td>
+      <td>23</td>
+      <td><strong>5</strong></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Shell / B</td>
+      <td>14</td>
+      <td><strong>25</strong></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Shell / C</td>
+      <td>18</td>
+      <td><strong>24</strong></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Sequential / A-full</td>
+      <td>14</td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>Sequential / B</td>
+      <td>11</td>
+      <td>—</td>
+      <td>4</td>
+      <td>—</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>Sequential / C</td>
+      <td>9</td>
+      <td>—</td>
+      <td>3</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Scripted / A-full</td>
+      <td>23</td>
+      <td>—</td>
+      <td>1</td>
+      <td>4</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Scripted / B</td>
+      <td>19</td>
+      <td>—</td>
+      <td>2</td>
+      <td>4</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td>Scripted / C</td>
+      <td>20</td>
+      <td>—</td>
+      <td>1</td>
+      <td>2</td>
+      <td>—</td>
+    </tr>
+  </tbody>
+</table>
+<p>The shell interface's drop is explained almost entirely by <code>invalid_name</code> errors — the model typing a command name or pipe syntax that doesn't exist or isn't valid — rising from 5/72 attempts (familiar names) to roughly 24–25/72 attempts (unfamiliar names). This is consistent with the model relying on memorized Unix command syntax patterns rather than purely on the written manual; when the names don't match what it has memorized, it more often mistypes or misremembers how to compose a working pipeline, even though the manual was present in every condition.</p>
+<p>Sequential and scripted interfaces show no comparable spike in naming-related errors — their failures are dominated by plain wrong answers (reasoning/aggregation mistakes), roughly flat to slightly declining across naming conditions.</p>
+<h4>Breakdown by task difficulty tier</h4>
+<p>(n = 24 trials per cell: 8 tasks in that tier × 3 seeds)</p>
+<table>
+  <thead>
+    <tr>
+      <th>Interface</th>
+      <th>Condition</th>
+      <th>Tier 1 (easy)</th>
+      <th>Tier 2 (medium)</th>
+      <th>Tier 3 (hard, composed)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Sequential</td>
+      <td>A-full</td>
+      <td>87.5%</td>
+      <td>91.7%</td>
+      <td>50.0%</td>
+    </tr>
+    <tr>
+      <td>Sequential</td>
+      <td>B</td>
+      <td>87.5%</td>
+      <td>87.5%</td>
+      <td>58.3%</td>
+    </tr>
+    <tr>
+      <td>Sequential</td>
+      <td>C</td>
+      <td>87.5%</td>
+      <td>100.0%</td>
+      <td>62.5%</td>
+    </tr>
+    <tr>
+      <td>Scripted</td>
+      <td>A-full</td>
+      <td>87.5%</td>
+      <td>79.2%</td>
+      <td>16.7%</td>
+    </tr>
+    <tr>
+      <td>Scripted</td>
+      <td>B</td>
+      <td>87.5%</td>
+      <td>95.8%</td>
+      <td>12.5%</td>
+    </tr>
+    <tr>
+      <td>Scripted</td>
+      <td>C</td>
+      <td>87.5%</td>
+      <td>91.7%</td>
+      <td>25.0%</td>
+    </tr>
+    <tr>
+      <td>Shell</td>
+      <td>A-full</td>
+      <td>87.5%</td>
+      <td>83.3%</td>
+      <td><strong>12.5%</strong></td>
+    </tr>
+    <tr>
+      <td>Shell</td>
+      <td>B</td>
+      <td>66.7%</td>
+      <td>58.3%</td>
+      <td><strong>12.5%</strong></td>
+    </tr>
+    <tr>
+      <td>Shell</td>
+      <td>C</td>
+      <td>66.7%</td>
+      <td>45.8%</td>
+      <td><strong>12.5%</strong></td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Key observations</strong>:</p>
+<ul>
+<li>Tier 1 and Tier 2 (the single-hop and aggregation tasks) are now solved 80–100% of the time across sequential and scripted, consistent with these being "easy/medium" tasks for a capable model once the scoring bug is corrected.</li>
+<li>The shell naming effect is now clearly visible in Tier 1 and Tier 2 specifically: Tier 1 drops 87.5% → 66.7% → 66.7%, and Tier 2 drops 83.3% → 58.3% → 45.8% as names become less familiar.</li>
+<li><strong>Shell's Tier 3 performance is flat at exactly 12.5% regardless of naming condition</strong> — unlike Tier 1/2, Tier 3 doesn't move at all with naming. This confirms the structural-limitation hypothesis: Tier 3 tasks require a two-step "join" that the shell interface's single-linear-pipeline grammar cannot express at all, so no amount of naming familiarity can rescue it — the ceiling is set by interface expressiveness, not naming.</li>
+<li>Tier 3 remains the hardest tier everywhere (12.5%–62.5%), confirming these composed tasks are intrinsically harder regardless of naming or interface — sequential/scripted retain some ability to improve on Tier 3 with familiar grammar workarounds (multi-turn retries, script loops), while shell's single-shot linear-pipe grammar cannot.</li>
+</ul>
+<h4>Aggregate failure-mode summary (all 648 trials, corrected)</h4>
+<table>
+  <thead>
+    <tr>
+      <th>Error tag</th>
+      <th>Count</th>
+      <th>Share of all failures</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Plain wrong answer (no tag)</td>
+      <td>151</td>
+      <td>65.7%</td>
+    </tr>
+    <tr>
+      <td><code>invalid_name</code></td>
+      <td>54</td>
+      <td>23.5%</td>
+    </tr>
+    <tr>
+      <td><code>primitive_error</code></td>
+      <td>11</td>
+      <td>4.8%</td>
+    </tr>
+    <tr>
+      <td><code>runtime_error</code></td>
+      <td>10</td>
+      <td>4.3%</td>
+    </tr>
+    <tr>
+      <td><code>timeout</code></td>
+      <td>4</td>
+      <td>1.7%</td>
+    </tr>
+    <tr>
+      <td><strong>Total failures</strong></td>
+      <td><strong>230</strong></td>
+      <td>—</td>
+    </tr>
+  </tbody>
+</table>
+<p>Across the whole experiment, plain wrong answers remain the single largest cause of failure, but naming/syntax-driven failures (<code>invalid_name</code>) now represent a larger relative share (23.5%, up from 16.4% pre-correction) now that many of the "accidentally wrong" string-matching false negatives have been removed from the "plain wrong answer" bucket. This sharpens the picture: once genuine reasoning errors are isolated from scoring artifacts, naming-driven mechanical failures in the shell interface stand out even more clearly as a distinct, naming-sensitive failure mode — concentrated almost entirely in the shell interface's less-familiar-naming conditions.</p>
+<h4>Confirmation that bug fixes worked (pilot run, pre-full-run)</h4>
+<p>A smaller 27-trial pilot (3 tasks, one per tier, × 3 interfaces × 3 conditions, 1 seed) was run after applying two harness fixes described in Methodology, specifically to confirm they resolved the originally-observed Tier-3 failures before committing to the full 648-trial run:</p>
+<ul>
+<li><code>sequential / A-full / Tier-3 task</code> succeeded using 6 of the now-available 15 turns (this exact task had been failing under the original 8-turn cap).</li>
+<li>A <code>scripted</code> Tier-3 trial's generated script was inspected directly and confirmed to use <code>json.loads(...)</code> to parse package metadata and <code>re.search(...)</code> / <code>re.split(...)</code> for pattern matching — both previously blocked, now working without sandbox errors.</li>
+<li>The <code>shell</code> interface continued to fail Tier-3 tasks in the pilot (as expected, since the structural join limitation was intentionally left unaddressed) — this failure mode was separately confirmed via a live diagnostic in which the model repeatedly attempted and failed to construct a valid multi-stage pipeline for the composed query, eventually exceeding even a 60-second diagnostic timeout while retrying.</li>
+</ul>
+<h3>Caveats and Next Steps</h3>
+<h4>Caveats — how much weight to put on these results</h4>
+<ul>
+<li><strong>Single model, single run size.</strong> All 648 trials used one model (<code>gpt-6-luna</code>) accessed through a custom proxy, with 3 repeated seeds per cell. This is enough to spot a clear pattern (like the ~19-point shell naming effect, which is large, consistent across Tier 1 and Tier 2, and backed by a specific, legible mechanism — <code>invalid_name</code> errors) but is <strong>not</strong> a large enough sample to make statistically rigorous, publication-strength claims, especially for the smaller sequential/scripted differences (which are within noise at this sample size regardless of their direction).</li>
+<li><strong>Single-model risk.</strong> Because only one model was tested, we can't yet tell whether this is a general property of language models trained on large amounts of Unix/code data, or specific to this particular model's training mix. Testing a second, differently-trained model via the same harness would be the most valuable next step to distinguish these.</li>
+<li><strong>A scoring bug was found and fixed during analysis.</strong> The original <code>str</code>-type answer scoring required an exact full-response match, which incorrectly penalized correct answers phrased as sentences rather than bare values. This was caught by noticing an unexpectedly high failure rate on "easy" Tier-1 tasks and investigating individual failed trials directly. After the fix (validated by re-scoring the same saved responses with zero correct→incorrect regressions), overall success rose from 48.5% to 64.5%, and Tier 1/2 success rates now sit in the much more plausible 80–100% range. This episode is itself a useful methodological reminder: an unexpectedly high failure rate on tasks that <em>should</em> be easy is worth investigating as a possible harness/scoring artifact before concluding the model is the weak link.</li>
+<li><strong>Plain reasoning errors are still the largest remaining failure mode, concentrated in Tier 3.</strong> Even after the correction, roughly two-thirds of all failures (151 of 230) are plain wrong answers unrelated to any naming or syntax issue, and these are increasingly concentrated in the hardest, composed Tier-3 tasks (12.5–62.5% success) rather than spread evenly across all difficulty levels. This means remaining headroom for improvement is now more clearly a <em>task-composition-difficulty</em> story than a general "the model struggles with these tools" story.</li>
+<li><strong>The shell interface's Tier-3 ceiling is a scoping choice, not evidence that "shells are bad at hard tasks."</strong> The simplified shell grammar used here deliberately supports only a single linear pipeline (one source command, optionally piped through filter/count stages) and does not support command substitution or multi-step joins. A real Unix shell (with subshells, variables, and loops) could express these composed queries. The flat 12.5% Tier-3 ceiling reflects this specific simplified grammar, not a general claim about shells or Unix tooling.</li>
+</ul>
+<h4>Suggested next steps</h4>
+<ol>
+<li><strong>Increase sample size (more seeds), focused on the shell row</strong>, since that's where the effect is largest and most actionable — this would tighten confidence intervals on the A-full vs. B vs. C comparison specifically for shell, and on Tier 1/Tier 2 within it.</li>
+<li><strong>Repeat the experiment with a second, differently-trained model</strong> via the same harness, to test whether the shell-naming effect generalizes or is specific to this model's training data.</li>
+<li><strong>Consider a controlled variant of the shell interface</strong> that <em>can</em> express two-step joins (e.g., via explicit intermediate-variable support), to separate "shell grammar helps because it's familiar" from "shell grammar helps except when the task structurally doesn't fit the grammar at all" — this would cleanly separate the naming effect from the expressiveness ceiling currently conflated in the Tier-3 shell numbers.</li>
+<li><strong>Investigate the dominant wrong-answer failure mode on Tier 3</strong> with qualitative review of a sample of incorrect-but-well-formed responses, since this is now the largest single remaining opportunity for improving overall success rates, independent of the naming question.</li>
+<li><strong>Audit the remaining <code>list</code>/<code>int</code>/<code>bool</code> scoring paths with the same scrutiny applied to <code>str</code></strong>, now that one scoring-bucket bug has been found — a quick spot-check of a sample of failed trials in each answer type is cheap insurance against further scoring-artifact-inflated failure rates.</li>
+</ol>
+  </article>
+</body>
+</html>

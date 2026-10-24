@@ -1,0 +1,2255 @@
+Learned Grammars as Compression for LLM Tool Interfaces
+
+Introduction
+
+Large language models increasingly interact with external systems through tools. These tools can be exposed in many forms: structured function calls, command-line interfaces, programming-language APIs, or specialized domain-specific languages. These representations are usually treated as alternative syntaxes for expressing the same underlying operations. Our results suggest that this view misses an important property of language models: the representation determines what knowledge the model can retrieve from pretraining about how the interface works.
+
+Consider a familiar Unix command such as grep. The name does more than identify an operation. It is associated with a learned interaction grammar: expected flags, argument ordering, stdin behavior, output conventions, and common patterns of use. A shell-like environment provides another learned grammar for composing operations through pipes, redirects, variables, and sequencing.
+
+Python distributes this information differently. For a novel function such as list_entries("/x"), the function name may provide relatively little pretrained knowledge, but Python supplies a highly familiar grammar for calling and composing functions. Structured tool calling moves still more of the grammar into the interface itself: argument names, types, and descriptions can be explicitly provided in a schema.
+
+We hypothesize that LLM tool use can be understood in terms of where this interaction grammar comes from.
+
+Retrieval-Cue Hypothesis. Familiar interface cues activate interaction grammars learned during pretraining. The value of a cue depends on how much correct behavior the retrieved grammar supplies that the interface does not otherwise specify.
+
+This provides a potential explanation for why familiar names can be extremely important in some interfaces and nearly irrelevant in others. A shell command may depend heavily on the command name to recover its calling convention. A Python function can rely on the host language for much of that grammar. A structured tool call may carry the grammar explicitly in its schema.
+
+This also suggests that familiar grammars provide a form of compression. If the model already knows part of the interface, that information does not need to be repeatedly represented in tool definitions, schemas, examples, or instructions.
+
+We call this grammar compression.
+
+Grammar-Compression Hypothesis. A familiar interaction grammar can reduce the representation and interaction required for tool use by allowing syntax, semantics, and composition rules to be recovered from pretraining rather than explicitly represented in the interface.
+
+This compression can be substantial. A command such as:
+
+ls /x | grep foo | wc -l
+
+expresses several operations, their arguments, their data dependencies, and their composition in a small representation. Much of the information required to interpret it is not present in the expression itself. It is recovered from learned Unix command grammars and shell composition grammar.
+
+But compression creates reliance. If an interface resembles a familiar language but implements different semantics or only a subset of its features, the same pretrained knowledge that provides compression can instead produce systematic errors.
+
+This leads to a third hypothesis.
+
+Grammar-Completion Hypothesis. Once an interface activates a familiar interaction grammar, the model tends to apply additional parts of that grammar, including constructs that the interface may not support.
+
+Our preliminary results show all three behaviors. Familiar Unix commands are often generated correctly with little explicit instruction. Nearly-JavaScript interfaces cause models to generate unsupported JavaScript. Novel argument grammars can be learned from a single example. Structured schemas can largely eliminate the correctness advantage of familiar names. And interfaces that compress their definitions can be cheaper even when they produce substantially more tool-call errors.
+
+Together, these results suggest a broader view of LLM-facing interface design:
+
+Learned grammar is compressed interface specification.
+
+When the grammar the model retrieves matches the grammar the system implements, this compression can reduce tokens, turns, and explicit specification. When they differ, the same compression creates an error tax.
+
+The goal of this work is to identify when that tradeoff is beneficial, measure its cost, and derive practical principles for designing LLM tool interfaces.
+
+Interaction Grammars
+
+We distinguish three related sources of grammar in a tool interface.
+
+Command grammar
+
+Command grammar determines how an individual operation is expressed.
+
+For example:
+
+grep -c pattern file
+
+The name grep can retrieve knowledge about valid flags, positional arguments, stdin behavior, output semantics, and common idioms.
+
+Different commands can therefore have different command grammars even when they exist within the same host environment.
+
+Composition grammar
+
+Composition grammar determines how operations can be combined.
+
+For example:
+
+ls /x | grep foo | wc -l
+
+The shell supplies rules for pipelines, redirects, variables, sequencing, and data flow. Python and JavaScript provide different composition grammars involving function calls, variables, loops, conditions, collections, and intermediate values.
+
+Command grammar and composition grammar can therefore be retrieved independently. A familiar command can appear inside an unfamiliar composition language, or unfamiliar operations can be composed using a highly familiar host language.
+
+Carried grammar
+
+An interface can also explicitly carry grammar that would otherwise need to be retrieved.
+
+A structured schema can specify that an operation takes a path string, a recursive boolean, and a query string. Documentation can specify argument ordering. A worked example can establish an unfamiliar calling convention immediately before it is needed.
+
+Carried grammar trades additional context for reduced dependence on pretrained knowledge.
+
+These mechanisms are not mutually exclusive. A single system can combine all three.
+
+Our current design is an example:
+
+what individual tools do can follow familiar Unix semantics;
+how individual tool calls are represented can follow an explicit schema;
+how multiple operations are composed can follow real JavaScript.
+The central design question is therefore not simply whether an interface is familiar. It is where each part of its grammar comes from and whether those sources agree.
+
+A Simple Model of Grammar, Cost, and Reliability
+
+The central tradeoff can be expressed through five variables:
+
+S = explicit specification supplied by the interface
+R = grammar recovered from familiar cues
+G = grammar required to perform the interaction
+F = fidelity between retrieved grammar and implemented grammar
+N = number of model turns required to complete the task
+Conceptually:
+
+S + R ≥ G
+
+An interface can therefore reduce explicit specification by relying on grammar the model already knows:
+
+S ≈ G - R
+
+This is the source of grammar compression.
+
+The quantities should not, however, remain abstract “amounts of information.” Each can be tied to an experimental measurement.
+
+Making S measurable
+
+Let S be the explicit interface specification presented to the model:
+
+schema tokens
+tool-description tokens
+instruction tokens
+example tokens
+Because this specification may be sent repeatedly, its actual interaction cost is not merely S.
+
+If approximately the same specification is sent on each turn:
+
+C_spec ≈ N × S
+
+This turns the number of turns into a first-class part of interface cost.
+
+A 2,000-token tool definition used for two turns costs approximately 4,000 input tokens.
+
+The same definition used for ten turns costs approximately 20,000.
+
+Making R measurable
+
+Grammar retrieval itself cannot be directly counted in tokens because the retrieved information resides in model weights.
+
+But its token-equivalent value can be estimated.
+
+At a target success rate τ, define grammar leverage as:
+
+R_token(τ) = S_opaque(τ) - S_familiar(τ)
+
+where:
+
+S_opaque(τ) is the minimum explicit specification required for an opaque interface to achieve success rate τ
+S_familiar(τ) is the minimum explicit specification required when the familiar cue is present
+This gives grammar leverage a concrete interpretation:
+
+How many explicit specification tokens can the familiar grammar replace at the same level of reliability?
+
+For example, if an opaque tool requires a 300-token schema and example to reach 95% success, while a familiar command reaches the same success with a 50-token description, the familiar grammar provides roughly 250 token-equivalents of grammar leverage for that task distribution.
+
+Because specification is repeated over turns, the interaction-level value can be much larger:
+
+Turn-adjusted grammar leverage ≈ N × R_token
+
+This may be one of the most practically important measurements in the paper.
+
+Making F measurable
+
+F, grammar fidelity, can be defined as the share of grammar the implementation preserves, weighted by the constructs the model actually uses.
+
+Let each grammar rule be g_i, and let w_i be the frequency with which the model attempts that rule in the fully compatible interface.
+
+Then:
+
+F = Σ w_i × compatible(g_i) / Σ w_i
+
+This is better than simply counting all possible grammar features.
+
+Changing the semantics of a feature the model never uses should not lower practical fidelity as much as changing a flag or quoting convention it uses constantly.
+
+Mismatch is then:
+
+M = 1 - F
+
+Making G measurable
+
+Rather than treating G as an unknown information quantity, define it operationally.
+
+For a given task family and target reliability τ, G(τ) is the minimum combination of explicit and retrieved grammar needed to reach that reliability.
+
+The empirical claim behind:
+
+S + R ≥ G
+
+then becomes:
+
+As reliable retrieved grammar increases, less explicit specification should be required to maintain the same task-success rate.
+
+This can be tested directly by varying specification level and cue familiarity.
+
+Turn Amplification
+
+Introducing N reveals another effect that is easy to miss when looking only at tool-call length.
+
+An error does not necessarily cost only the tokens needed to produce the bad call.
+
+It can create a new model turn.
+
+That new turn can cause the system to resend:
+
+tool definitions
+system instructions
+previous conversation history
+previous tool results
+the error itself
+So an error can have an amplified token cost.
+
+Fixed-definition amplification
+
+If the tool definition costs S tokens and an error creates one additional model turn:
+
+Error overhead ≥ S
+
+before counting the repair call, error message, or accumulated history.
+
+A single extra turn in an interface with an 8,000-token specification therefore has a very different economic effect from one in an interface with a 1,000-token specification.
+
+Growing-history amplification
+
+The effect can be larger when previous conversation history is replayed.
+
+Let H_t be the accumulated history visible on turn t.
+
+Total input cost is approximately:
+
+C_input = Σₜ₌₁ᴺ (S + H_t + U_t)
+
+where U_t represents new task and tool-result content on turn t.
+
+If history grows approximately linearly with each turn:
+
+H_t ≈ h × (t - 1)
+
+then:
+
+C_input ≈ N × S + h × N(N - 1)/2 + ΣU_t
+
+The repeated tool specification grows linearly with turns.
+
+The replayed conversation history can grow approximately quadratically.
+
+This produces an important new principle:
+
+The cost of an early interface error can be larger than the cost of a late error because the extra interaction it creates may be carried forward through subsequent turns.
+
+We call this turn amplification.
+
+Error-token amplification
+
+Let an incorrect call add ΔN repair turns.
+
+Then its additional cost is approximately:
+
+C_error = ΔN × S + ΔC_history + ΔC_results + ΔC_calls
+
+This gives us a measurable version of the error tax.
+
+Two interfaces can have the same number of errors but very different error costs if:
+
+one has larger definitions;
+one needs more turns to repair;
+one returns larger error messages;
+one repeatedly carries much more history forward.
+This suggests that error rate alone is an incomplete measure.
+
+The more useful measure is:
+
+Error cost = incremental tokens caused by the error trajectory relative to the equivalent successful trajectory.
+
+Grammar Leverage
+
+We define grammar leverage as the amount of explicit interface specification that can be omitted because the model can reliably recover it from a learned grammar.
+
+The more correct interaction structure the model can retrieve, the less the system must explicitly describe.
+
+More retrievable grammar → less explicit specification
+
+And because specification is repeatedly transmitted:
+
+more retrievable grammar → smaller S → smaller N × S
+
+This gives grammar compression leverage over both representation size and repeated interaction cost.
+
+The amount of leverage associated with a name depends on where the grammar lives.
+
+In shell, substantial grammar belongs to the individual command. Knowing grep or find means knowing flags, argument order, and conventional patterns.
+
+In Python or JavaScript, much more grammar belongs to the host language. A novel function can still be called and composed using ordinary language syntax.
+
+In structured tool calling, much of the grammar is carried by the schema itself.
+
+Outside tool-naming experiment
+
+The outside study tested five underlying tools with three naming schemes—canonical Unix names, descriptive replacements, and random names—and three interaction surfaces: one structured call per turn, a one-shot Python script, and a one-shot shell command. The underlying operations were held constant while the study varied whether familiar names and familiar calling conventions were available. This provides evidence about whether familiar names matter differently depending on where the interface grammar lives.
+
+Average total tokens per trial were:
+
+
+
+Interface
+
+Unix names
+
+Descriptive names
+
+Random names
+
+Unix → Random
+
+one call per turn
+
+2,007
+
+2,131
+
+2,364
+
++17.8%
+
+one-shot script
+
+2,041
+
+2,100
+
+2,044
+
++0.2%
+
+one-shot shell
+
+1,575
+
+2,009
+
+2,234
+
++41.8%
+
+Python is a highly familiar composition grammar, yet changing the function names had almost no effect in the script condition.
+
+That is not evidence against familiarity. It suggests that the relevant grammar did not live in the function names.
+
+By contrast, changing Unix command names removed a retrieval cue for substantial command-specific grammar, producing a much larger effect in shell.
+
+Tool-dialect experiment
+
+The tool-dialect study replayed the same 154 tasks while changing only how the base tools were exposed. Some conditions used structured fields, some exposed command-line arguments inside individual tools, and one collapsed the interface into a single command-line tool. This lets us compare familiar command grammar against explicit structured grammar while holding the tasks and underlying capabilities largely constant.
+
+Incorrectly formed calls by tool were:
+
+
+
+Interface
+
+ls
+
+read
+
+find
+
+find + SQL
+
+current
+
+0/327
+
+0/306
+
+4/40
+
+5/49
+
+json
+
+0/285
+
+0/296
+
+5/34
+
+3/46
+
+args
+
+1/338
+
+0/307
+
+1/42
+
+25/67
+
+single
+
+0/241
+
+0/253
+
+2/40
+
+21/48
+
+When ls and read were expressed as command lines, only one of 645 calls was incorrectly formed.
+
+The same outside naming study provides complementary evidence in the shell condition:
+
+
+
+Names
+
+Tasks correct
+
+Wrong command name or syntax
+
+Unix
+
+61.1%
+
+5/72
+
+descriptive
+
+45.8%
+
+25/72
+
+random
+
+41.7%
+
+24/72
+
+The clean causal test is still missing. We have not yet independently changed the command name while preserving its familiar flags and argument grammar. That is one of the central experiments proposed below.
+
+Grammar Fidelity and the Cost of Mismatch
+
+Grammar compression is useful only when the retrieved grammar describes the implemented system.
+
+As reliance on retrieved grammar increases, correctness should become increasingly dependent on fidelity:
+
+more grammar leverage → greater sensitivity to grammar fidelity
+
+The cost of mismatch should grow with both the amount of grammar being retrieved and the amount of that grammar that is wrong:
+
+Mismatch cost ∝ R × M
+
+But this cost should be measured in more than errors.
+
+A better operational form is:
+
+Mismatch cost = extra failed tasks + extra repair turns + extra tokens caused by mismatched grammar
+
+This leads to the Almost-Familiar Principle:
+
+A partially compatible familiar grammar can be worse than an unfamiliar grammar because familiarity increases both useful compression and the cost of mismatch.
+
+ToolScript experiment
+
+ToolScript was a scripting interface designed to let the model compose multiple operations in one call. Its original syntax resembled JavaScript but implemented only a subset of JavaScript. The system was later changed so that the scripting language was actual JavaScript operating over JSON. Comparing captured script calls before and after this change provides a natural test of grammar fidelity: the surface remained familiar, but the implementation became much closer to the grammar the model was already trying to use.
+
+
+
+ToolScript
+
+Scripts
+
+Scripts with errors
+
+Error rate
+
+nearly JavaScript
+
+47
+
+22
+
+47%
+
+JavaScript over JSON
+
+15
+
+2
+
+13%
+
+Before the change, the model generated:
+
+
+
+Unsupported JavaScript construct
+
+Scripts
+
+arrow function to an array method
+
+9
+
+template literal
+
+7
+
+JSON.stringify or JSON.parse
+
+3
+
+regular-expression literal
+
+1
+
+C-style for loop
+
+1
+
+These were not errors in understanding the task or tools. They were valid constructs from the language the interface resembled but did not actually implement.
+
+Increasing grammar fidelity removed most of that failure mode.
+
+SQL inside
+
+find
+
+The same tool-dialect experiment also extended the familiar find operation with SQL behavior that does not exist in normal Unix find. This creates a useful within-interface contrast: ordinary find uses a familiar command grammar, while find plus SQL requires the model to move beyond it.
+
+Ordinary find under the command-line interface was incorrectly formed only:
+
+1 time in 42 calls.
+
+find with SQL was incorrectly formed:
+
+25 times in 67 calls.
+
+The failures clustered around the boundary between grammars:
+
+JSON embedded inside command lines
+SQL quoting inside shell quoting
+unsupported shell syntax
+This is consistent with the idea that familiar grammar is highly effective where it remains faithful and becomes a source of error where the implementation departs from it.
+
+Grammar Completion
+
+The mismatch results suggest a stronger mechanism.
+
+The model does not appear to retrieve only the particular feature demonstrated by an interface. Once an interface is recognized as belonging to a familiar language, the model often generates other features from that language.
+
+We call this grammar completion.
+
+When an interface strongly resembles a learned grammar, the model tends to complete the interface using additional constructs from that grammar.
+
+Existing error corpus
+
+Several prior experiments preserved malformed or rejected calls rather than discarding them. Looking across the command-line dialects, early ToolScript, and restricted script environments reveals a repeated pattern: many failures are not arbitrary malformed outputs. They are valid constructs from the real language the interface resembles, but constructs the restricted implementation does not support.
+
+
+
+Interface
+
+Unsupported familiar constructs generated
+
+command-line args
+
+pipes and redirects
+
+single command line
+
+git; command lines passed to other tools
+
+nearly-JavaScript ToolScript
+
+arrow functions, template literals, JSON, regex literals, C-style loops
+
+restricted script sandbox
+
+import json, import re
+
+Nothing in the command-line tool definitions needed to mention pipes for the model to generate them. Nothing needed to explicitly teach arrow functions for them to appear in ToolScript.
+
+This leads to an important design implication:
+
+Borrowing part of a familiar language may implicitly borrow expectations about the rest of it.
+
+Specification Substitution
+
+If pretrained grammar supplies interface information, explicit specification should be able to supply some of the same information.
+
+This produces the Specification Substitution Principle:
+
+The more grammar an interface carries explicitly, the less it should depend on familiar retrieval cues.
+
+Tree-surface action experiment
+
+The tree-surface study placed the same underlying world behind different discovery and action interfaces. In one condition, reading a node revealed only which actions existed and the model needed a separate help call to learn how to invoke them. In the later condition, the read result included each action’s arguments and one complete example call. This tests whether novel grammar can be supplied locally at the moment of use.
+
+
+
+Interface
+
+Turns
+
+Tool calls
+
+Help calls
+
+Input tokens
+
+tree act, help required
+
+6.3
+
+8.1
+
+2.0
+
+7,210
+
+tree act, example in read
+
+5.4
+
+6.3
+
+0.2
+
+5,651
+
+With the example in the read result, every close_deal run moved directly from the read to a correct act call.
+
+This is evidence that an unfamiliar argument grammar can be established in context rather than retrieved from pretraining.
+
+Structured naming experiment
+
+In the one-call-per-turn arm of the outside naming study, the model received an explicit structured tool schema on each turn. The same tools were then given canonical Unix names, descriptive names, or random names. This isolates a setting where much of the calling grammar is carried by the schema rather than retrieved from the name.
+
+Random names were correct 83.3% of the time versus 76.4% for Unix names.
+
+Familiar naming provided no correctness advantage.
+
+This supports the idea that explicit carried grammar can replace grammar that would otherwise need to be retrieved from a name.
+
+However, our results also suggest an asymmetry:
+
+Explicit specification appears good at filling missing grammar. It may be substantially worse at correcting retrieved grammar that is already wrong.
+
+That remains to be tested directly.
+
+Grammar Compression and Interface Overhead
+
+The economic value of learned grammar comes from reducing interface overhead.
+
+We define interface overhead as the additional representation and interaction required by an interface to complete the same underlying task.
+
+The main components are:
+
+repeated tool definitions
+tool-call representation
+intermediate tool results
+repair turns
+accumulated conversation history
+The total cost of an interaction can therefore be approximated more directly as:
+
+C_eff = Σₜ (S_t + H_t + Calls_t + Results_t)
+
+plus any output-generation cost that should be included.
+
+This formulation naturally captures growth over turns.
+
+Tool-dialect cost experiment
+
+The tool-dialect experiment ran the same 154 tasks through five ways of exposing essentially the same tool capabilities. Because each run recorded total turns, billed tokens, and tool-call failures, it lets us separate correctness from economic efficiency and see whether compact interfaces remain cheaper after repair behavior is included.
+
+
+
+Interface
+
+Correct
+
+Turns
+
+Billed tokens
+
+Tool-call errors
+
+current
+
+149/154
+
+1,010
+
+1,562,898
+
+28
+
+fields
+
+150/154
+
+943
+
+1,482,322
+
+31
+
+json
+
+151/154
+
+950
+
+1,523,539
+
+33
+
+args
+
+152/154
+
+1,054
+
+1,538,659
+
+67
+
+single
+
+149/154
+
+1,055
+
+1,303,253
+
+95
+
+The single interface produced more than three times as many tool-call errors as current, yet consumed 17% fewer tokens.
+
+Its main advantage was not shorter calls. It had a much smaller tool definition:
+
+7,060 characters versus 11,348–13,097 characters.
+
+Because the tool specification is paid repeatedly across turns, this difference dominated its additional repairs.
+
+Unused-tool experiment
+
+A tree-surface condition compared a normal flat interface, a tree interface, and a flat interface padded with 30 tools the tasks did not need. The underlying world and tasks were unchanged. The purpose was to test the token cost of interface surface area itself.
+
+
+
+Interface
+
+Tools
+
+Definition chars
+
+Turns
+
+Input tokens
+
+flat
+
+10
+
+4,185
+
+5.4
+
+5,043
+
+tree
+
+9
+
+4,184
+
+7.0
+
+7,443
+
+flat + 30 unused tools
+
+40
+
+15,527
+
+6.3
+
+14,487
+
+Adding 30 unused tools nearly tripled input tokens with little corresponding increase in turns.
+
+This provides direct evidence that unused interface definition has a large recurring cost.
+
+Interface Overhead Principle
+
+These results suggest a stronger formulation than simply saying familiar syntax creates shorter calls:
+
+A token-efficient interface minimizes the specification repeatedly transmitted across turns, the number of turns required, and the history those turns accumulate.
+
+This means grammar compression can provide three different economic benefits:
+
+Definition compression
+Less grammar must be described in tool definitions.
+Turn compression
+More work can potentially be expressed or completed per model turn.
+History compression
+Fewer turns prevent unnecessary accumulation and replay of interaction history.
+The third effect is especially important because it means turn savings can have compounding value.
+
+Composition Leverage
+
+Grammar compression can occur at two levels.
+
+Call compression reduces the representation required for an individual operation.
+
+Composition compression reduces the representation and interaction required to combine multiple operations.
+
+Let N be the number of model turns and D the dependency depth of the task.
+
+We hypothesize:
+
+The value of a composition grammar increases with task depth and interdependence because it can reduce N.
+
+Reducing N can lower not only the number of calls but:
+
+N × specification cost
+
+and potentially:
+
+Σ accumulated history.
+
+Outside study: deep tasks
+
+The outside study included a highest-difficulty tier requiring results from two lookups to be combined. The same problems were attempted through iterative structured tool use, a one-shot script, and a one-shot shell expression. This is the closest existing comparison of composition mechanisms, although the conditions differed substantially in their opportunities for repair.
+
+
+
+Interface
+
+Unix names
+
+Descriptive
+
+Random
+
+one call per turn
+
+50.0%
+
+58.3%
+
+62.5%
+
+one-shot script
+
+16.7%
+
+12.5%
+
+25.0%
+
+one-shot shell
+
+12.5%
+
+12.5%
+
+12.5%
+
+The result currently cuts against the Composition Leverage hypothesis.
+
+But the iterative tool interface allowed up to 15 turns, whereas the script and shell interfaces received one attempt plus one repair.
+
+The experiment therefore changes composition grammar and recovery budget at the same time.
+
+Composition Leverage remains an open hypothesis and requires a controlled test.
+
+Error Recovery
+
+An interface is not defined only by what happens when the model is correct. It is also defined by what happens when the model is wrong.
+
+Let:
+
+A = attempts allowed
+Q = quality of error feedback
+A grammar mismatch can therefore have two very different consequences.
+
+With multiple attempts and a useful error:
+
+mismatch → bad call → repair → additional turns and tokens
+
+With limited attempts or weak feedback:
+
+mismatch → bad call → failed task
+
+This produces the Error Recovery Principle:
+
+Error recovery determines whether grammar mismatch costs additional interaction or costs the task.
+
+Comparison across existing studies
+
+Our command-line dialect experiment allowed multi-turn recovery and returned useful errors. The outside shell study allowed only one attempt plus one repair and provided much weaker feedback. Both produced increased syntax errors under difficult grammar conditions, but the effect on task success was very different.
+
+
+
+
+
+Tool dialects
+
+Outside shell
+
+recovery
+
+multi-turn
+
+one try + one fix
+
+feedback
+
+corrective
+
+weak
+
+extra syntax errors
+
+large
+
+large
+
+effect on final correctness
+
+small
+
+large
+
+This does not isolate recovery experimentally, but it strongly motivates treating recovery as an independent factor in future work.
+
+Effective Cost
+
+The shortest representation is not necessarily the cheapest interface.
+
+We define effective interaction cost as the actual tokens required to complete successful work:
+
+C_eff = C_spec + C_calls + C_results + C_history + C_repairs
+
+where repeated specification is already captured across turns.
+
+The relevant optimization objective is:
+
+Minimize effective cost subject to acceptable reliability.
+
+Or empirically:
+
+Effective cost per success = total interaction tokens / successful tasks
+
+Cost per successful task
+
+The tool-dialect experiment provides a useful first measurement because complete token consumption and final task correctness were recorded for each representation.
+
+
+
+Interface
+
+Tool-call errors
+
+Correct tasks
+
+Billed tokens
+
+Tokens / correct task
+
+current
+
+28
+
+149
+
+1,562,898
+
+10,489
+
+args
+
+67
+
+152
+
+1,538,659
+
+10,123
+
+single
+
+95
+
+149
+
+1,303,253
+
+8,747
+
+The interface with the most errors was still the cheapest per successful task.
+
+This leads to the Effective Cost Principle:
+
+The best tool grammar is not necessarily the one with the fewest errors or shortest calls. It is the one that minimizes total cost per successful task.
+
+Current Evidence
+
+The framework is motivated by several existing experiments.
+
+Tree surface. 180 runs in a fixed world containing a filesystem, CRM, inbox, and slide deck. Nine plans changed individual properties of how that world was exposed while correctness was checked against the resulting state.
+
+Tool dialects. The same 154 tasks were run through five representations of the same base tool capabilities, allowing direct comparisons of structure, command-line grammar, turns, errors, and token cost.
+
+ToolScript. Script calls were captured before and after the scripting environment changed from a restricted JavaScript-like language to real JavaScript over JSON.
+
+Findings run. 204 tasks and 558 tool calls were collected with every tool-call error classified.
+
+Agent context experiments. Course Manager tasks compared solving from scratch, using message history, using purpose-built tools, using compiled system context, and combinations of these approaches.
+
+Outside naming study. Five tools were given Unix, descriptive, or random names and exposed through three interaction surfaces—iterative structured calls, one-shot Python, and one-shot shell—for 648 trials.
+
+All current experiments use one model family. Cross-model replication is therefore necessary before making a general claim about LLMs.
+
+Headline Principles
+
+1. Grammar Compression
+
+Learned grammar is compressed interface specification.
+
+Existing support: medium.
+
+2. Grammar Leverage
+
+The more correct interface information a model can retrieve from pretraining, the less must be explicitly represented.
+
+Grammar leverage can be measured in token-equivalent terms as the reduction in explicit specification required to reach the same reliability.
+
+Existing support: medium.
+
+3. Turn Amplification
+
+The cost of interface specification grows with the number of turns, and accumulated history can make extra turns increasingly expensive.
+
+An error can therefore cost much more than the text of the incorrect call.
+
+Existing support: directly motivated by measured definition size and turn costs; the growth model remains to be tested explicitly.
+
+4. Interface Overhead
+
+Token efficiency should be measured through repeated specification, turns, accumulated history, results, and repairs—not call length alone.
+
+Existing support: medium.
+
+5. Grammar Fidelity
+
+Compression is beneficial only to the extent that retrieved grammar matches implemented grammar.
+
+Existing support: strong.
+
+6. Mismatch Cost
+
+The cost of grammar mismatch increases with the amount of behavior delegated to learned grammar.
+
+Partial compatibility may be worse than complete unfamiliarity.
+
+Existing support: medium-strong; the non-monotonic prediction remains untested.
+
+7. Specification Substitution
+
+Explicit specification can replace grammar the model lacks, but may be less effective at overriding grammar the model already believes.
+
+Filling missing grammar is supported. Correcting conflicting grammar remains weakly supported.
+
+8. Composition Leverage
+
+A composition grammar should become more valuable as task depth and interdependence increase if it reduces model turns.
+
+Existing support: insufficient.
+
+9. Effective Cost
+
+Interfaces should be evaluated by total cost per successful task.
+
+Existing support: strong.
+
+10. Error Recovery
+
+Attempts and error quality determine whether mismatch costs additional tokens or a failed task.
+
+Existing support: plausible but not yet isolated.
+
+Experimental Program
+
+The next experiments should isolate the causal mechanisms rather than compare complete interfaces that differ in several ways at once.
+
+The central rule is:
+
+Change one source of grammar at a time while keeping the task, recovery budget, and error feedback constant.
+
+Experiment 0: Classify Existing Errors
+
+What the experiment does
+
+Before generating new data, classify every malformed call already captured in the command-line and ToolScript experiments. The goal is to determine whether failures are arbitrary syntax mistakes or recognizable constructs imported from the familiar language the interface resembles.
+
+Classify each error as:
+
+explicitly specified syntax
+supported familiar syntax
+unsupported familiar syntax
+syntax with no recognizable source grammar
+Prediction
+
+Most syntax failures in familiar-looking interfaces will be valid constructs from the full familiar grammar that the restricted implementation does not support.
+
+This gives a first quantitative test of grammar completion with no additional model calls.
+
+Experiment 1: Separate Names from Grammar
+
+What the experiment does
+
+Create one underlying operation and independently manipulate its name, its calling grammar, and the amount of explicit specification provided. This separates three things that previous studies confounded: what the tool is called, how the call is written, and how much the model is explicitly told.
+
+Use three names:
+
+Canonical: find
+
+Descriptive: find_files
+
+Opaque: qovrex
+
+Cross these with:
+
+Familiar grammar
+
+qovrex /x -name "*.txt"
+
+and:
+
+Novel grammar
+
+qovrex --q "*.txt" --root /x
+
+Then cross both with:
+
+name only
+schema/documentation
+schema + example
+Critical test
+
+Compare:
+
+qovrex /x -name "*.txt"
+
+with:
+
+qovrex --q "*.txt" --root /x
+
+The name is equally opaque in both.
+
+If the familiar argument grammar performs better, grammar itself transfers independently of semantic naming.
+
+This is probably the single most important missing experiment.
+
+Experiment 2: Manipulate Grammar Fidelity
+
+What the experiment does
+
+Begin with a fully compatible familiar interface, such as Unix find, and progressively change individual rules while holding the operation itself constant. This directly tests how performance changes as the implemented grammar moves away from the grammar the interface evokes.
+
+Change rules such as:
+
+flags
+argument order
+quoting
+pipes
+output conventions
+option semantics
+At each fidelity level compare:
+
+familiar name
+familiar name + documented differences
+opaque name + the same documentation
+Also vary:
+
+recovery attempts
+error-message quality
+Prediction
+
+Performance may be non-monotonic:
+
+fully familiar → good
+
+almost familiar → worse
+
+obviously unfamiliar + explicitly taught → recovery
+
+This would directly test the Almost-Familiar Principle.
+
+It would also show whether documentation can override an incorrect learned prior.
+
+Experiment 3: Test Grammar Completion
+
+What the experiment does
+
+Create restricted versions of familiar languages that intentionally support only part of the real grammar. Compare them with equally capable interfaces whose syntax does not resemble any familiar language.
+
+For example, restricted shell might support commands and arguments but not pipes or redirects. Restricted JavaScript might support variables and function calls but not arrow functions or JSON.stringify.
+
+Prediction
+
+Familiar-looking interfaces should produce more:
+
+unsupported but valid language constructs
+
+rather than merely more random mistakes.
+
+That result would directly support grammar completion.
+
+Experiment 4: Measure In-Context Grammar Learning
+
+What the experiment does
+
+Create a genuinely novel grammar and vary how it is taught:
+
+nothing
+formal documentation
+one example
+two examples
+documentation + example
+Also vary where the example appears:
+
+in the initial tool specification
+immediately before the action that needs it
+Prediction
+
+A small number of examples should allow the model to establish a local grammar.
+
+Examples immediately before use may be especially effective.
+
+Also measure whether the newly learned grammar is incorrectly transferred to other tools.
+
+Experiment 5: Measure Grammar Leverage in Tokens
+
+What the experiment does
+
+This experiment turns R into a token-equivalent measurement.
+
+For familiar and opaque versions of the same interface, progressively increase explicit specification until each reaches the same target success rate, such as 95%.
+
+Then calculate:
+
+R_token(95%) = specification required by opaque interface - specification required by familiar interface
+
+Prediction
+
+High-leverage familiar grammars will reach the same reliability with substantially less explicit specification.
+
+The turn-adjusted economic value is then:
+
+N × R_token
+
+This gives grammar compression a direct token interpretation.
+
+Experiment 6: Measure Turn Amplification
+
+What the experiment does
+
+Run matched tasks while systematically causing the same interface error at different points in the interaction: early, middle, and late.
+
+For each injected or naturally occurring error, measure the difference between the error trajectory and an otherwise equivalent successful trajectory.
+
+Measure:
+
+extra turns
+repeated tool-definition tokens
+repeated conversation-history tokens
+extra tool-result tokens
+repair-call tokens
+Key metric
+
+Define:
+
+Error Token Cost = tokens(error trajectory) - tokens(matched successful trajectory)
+
+Then compare the same type of error at different turns.
+
+Prediction
+
+Early errors should often cost more than late errors because the extra turn they create becomes part of the history carried through later interaction.
+
+This directly tests turn amplification.
+
+It also lets us determine whether total cost grows approximately as:
+
+N × S
+
+or whether history replay produces a stronger, approximately quadratic component.
+
+Experiment 7: Measure Composition Leverage
+
+What the experiment does
+
+Construct task families requiring increasing dependency depth:
+
+1, 2, 3, 5, 8, and 12 operations.
+
+Compare:
+
+iterative structured calls
+parallel structured calls
+shell
+Python
+JavaScript
+Give every condition the same recovery budget and equivalent error feedback.
+
+Use:
+
+linear chains
+parallel work
+fan-out/fan-in
+loops
+filters
+branches
+intermediate transformations
+Prediction
+
+Structured calls may perform best on shallow tasks.
+
+If Composition Leverage is correct, host languages should increasingly reduce turns and effective token cost as dependency depth grows.
+
+The important dependent variable is not merely number of operations.
+
+It is:
+
+cost as a function of dependency depth.
+
+Experiment 8: Separate the Sources of Compression
+
+What the experiment does
+
+Create a factorial experiment separating:
+
+short versus verbose individual calls
+single-turn versus multi-turn composition
+small versus large tool definitions
+This identifies which part of interface design actually produces the savings.
+
+Prediction
+
+Our current evidence suggests:
+
+repeated definition size > turn/composition savings > individual call length
+
+but this has not yet been cleanly isolated.
+
+Experiment 9: Measure Repair Economics
+
+What the experiment does
+
+Record complete trajectories from incorrect call through recovery.
+
+Vary error messages between:
+
+bare rejection
+explanation
+correct syntax
+correct syntax + example
+Then calculate the incremental token cost caused by each error.
+
+Prediction
+
+Helpful errors should turn many failures into repair turns.
+
+But whether that is economically worthwhile depends on the size of the interface and the cost of creating another turn.
+
+This connects error recovery directly to turn amplification.
+
+Cross-Model and Cross-Grammar Replication
+
+The core experiments must be repeated across multiple model families.
+
+The first experiments to replicate should be:
+
+name × grammar × specification
+grammar-fidelity manipulation
+grammar completion
+token-equivalent grammar leverage
+The theory should also be tested with several familiar grammars:
+
+shell
+JavaScript
+Python
+SQL
+Git
+HTTP/cURL
+regular expressions
+A particularly interesting extension is grammar collision.
+
+Our existing command-line data already suggests that embedding SQL or JSON inside shell syntax creates failures at the boundary between two familiar grammars.
+
+This motivates another hypothesis:
+
+Nested grammars create additional risk when their quoting, escaping, typing, or composition rules conflict.
+
+Primary Outcomes
+
+Every experiment should measure five classes of outcomes.
+
+Correctness
+
+first-attempt success
+eventual success
+semantic correctness
+argument correctness
+Grammar behavior
+
+expected familiar syntax
+unsupported familiar syntax
+invented syntax
+wrong grammar transfer
+grammar collision errors
+Representation cost
+
+tool-definition tokens
+schema/documentation tokens
+example tokens
+call tokens
+Interaction cost
+
+model turns
+repeated specification tokens
+accumulated history tokens
+intermediate-result tokens
+repair turns
+Effective cost
+
+total tokens per successful task
+error-token cost
+turns per successful task
+calls per successful task
+monetary cost where appropriate
+What Would Confirm the Theory?
+
+The theory would receive particularly strong support if the experiments show that:
+
+Familiar names matter most when command grammar is implicit.
+Explicit schemas reduce dependence on familiar names.
+Familiar command grammar still transfers when the familiar command name is removed.
+Familiar names cause the model to attempt associated syntax even when that syntax is explicitly invalid.
+Restricted familiar languages produce unsupported constructs from the full language.
+An unfamiliar but explicitly taught interface can outperform an almost-familiar incompatible interface.
+Familiar grammar reduces the explicit specification required to achieve a fixed reliability target.
+The resulting token savings multiply across turns.
+Extra turns amplify errors through repeated specification and accumulated history.
+Composition languages become relatively more efficient as dependency depth increases, if the Composition Leverage hypothesis is correct.
+Helpful error feedback turns mismatch from task failure into measurable repair cost.
+The savings from grammar compression survive after those repair costs are included.
+Together these results would establish the full mechanism:
+
+Cue → Grammar Retrieval → Less Explicit Specification → Lower Repeated Interface Cost
+
+when fidelity is high.
+
+When fidelity is low:
+
+Cue → Grammar Retrieval → Mismatch → Error → Extra Turns → Turn-Amplified Token Cost
+
+or, when recovery fails:
+
+Mismatch → Failed Task
+
+Design Principles
+
+If the hypotheses hold, they imply a small set of practical rules for LLM tool design.
+
+Borrow a grammar whole or not at all
+
+If a tool presents itself as a Unix command, support what that command normally supports. If that is not possible, expose the difference structurally.
+
+Keep each grammar in one place
+
+Use one source of grammar for each concern.
+
+For example:
+
+tool semantics: familiar Unix behavior
+invocation: explicit schema
+composition: real JavaScript
+Keep extensions out of borrowed syntax
+
+If SQL is not part of find, do not pretend it is. Put it into a separate field or operation.
+
+Teach new grammar where it is used
+
+When pretrained grammar does not apply, show the correct call immediately before the model needs it.
+
+Minimize repeated specification
+
+A token removed from an interface definition can be saved again on every subsequent model turn.
+
+This makes definition compression potentially much more valuable than shaving the same number of tokens from an individual call.
+
+Minimize unnecessary turns
+
+An additional turn can replay the entire interface and accumulated history. Turn count is therefore both an interaction cost and a token multiplier.
+
+Make the cheapest path the easiest path
+
+Where possible, align the fewest-turn path with the lowest-token path.
+
+Design error messages as grammar instruction
+
+A useful error should show the correct form. This can convert a mismatch from a failed task into one repair turn.
+
+But repair is not free. Its cost should be measured in the extra tokens created by the entire resulting trajectory.
+
+Central Principle
+
+The overall optimization problem is not:
+
+Use the fewest tokens.
+
+It is:
+
+Minimize total interface cost while maintaining grammar fidelity and acceptable reliability.
+
+The core relationships are:
+
+high grammar leverage + high fidelity → compression
+
+high grammar leverage + low fidelity → systematic error
+
+small specification × few turns → low overhead
+
+large specification × many turns → high overhead
+
+error + recovery → turn-amplified token cost
+
+error without recovery → task failure
+
+The resulting design rule is:
+
+Maximize grammar leverage where grammar fidelity is high; spend explicit tokens where it is not.
+
+And, more practically:
+
+Use what the model already knows to compress the interface—but only where what the model knows is true.
+
+
+
+
+
+Sent from my iPhone
+
+On Oct 7, 2026, at 5:22 AM, White, Jules <jules.white@vanderbilt.edu> wrote:
+
+﻿
+I combined your experiments with my experimental results and some related research. Here is what I think the paper should be:
+
+Learned Grammars as Compression for LLM Tool Interfaces
+
+Introduction
+
+Large language models increasingly interact with external systems through tools. These tools can be exposed in many forms: structured function calls, command-line interfaces, programming-language APIs, or specialized domain-specific languages. These representations are usually treated as alternative syntaxes for expressing the same underlying operations. Our initial results suggest that this view misses an important property of language models: the representation determines what knowledge the model can retrieve from pretraining about how the interface works.
+
+Consider a familiar Unix command such as grep. The name does more than identify an operation. It is associated with a learned interaction grammar: expected flags, argument ordering, stdin behavior, output conventions, and common patterns of use. A shell-like environment provides another learned grammar for composing operations through pipes, redirects, variables, and sequencing.
+
+Python distributes this information differently. For a novel function such as list_entries("/x"), the function name may provide relatively little pretrained knowledge, but Python supplies a highly familiar grammar for calling and composing functions. Structured tool calling moves still more of the grammar into the interface itself: argument names, types, and descriptions can be explicitly provided in a schema.
+
+We hypothesize that LLM tool use can be understood in terms of where this interaction grammar comes from.
+
+Retrieval-Cue Hypothesis. Familiar interface cues activate interaction grammars learned during pretraining. The value of a cue depends on how much correct behavior the retrieved grammar supplies that the interface does not otherwise specify.
+
+This provides a potential explanation for why familiar names can be extremely important in some interfaces and nearly irrelevant in others. A shell command may depend heavily on the command name to recover its calling convention. A structured tool call may carry that same information explicitly in its schema.
+
+This also suggests that familiar grammars provide a form of compression. If the model already knows the grammar, the interface does not need to repeatedly describe it.
+
+For example:
+
+ls /x | grep foo | wc -l
+
+expresses several operations, their arguments, their data dependencies, and their composition in very few tokens. Much of the information required to interpret the expression is not present in the expression itself. It is recovered from the model’s learned knowledge of Unix commands and shell composition.
+
+We call this grammar compression.
+
+Grammar-Compression Hypothesis. A familiar interaction grammar can reduce the tokens and interaction turns required for tool use by allowing syntax, semantics, and composition rules to be recovered from pretraining rather than explicitly represented in the interface.
+
+This compression is only safe when the retrieved grammar agrees with the implemented interface. If an interface resembles a familiar language but implements different semantics or only a subset of its features, the same pretrained knowledge that provides compression may instead produce systematic errors.
+
+This leads to a third hypothesis.
+
+Grammar-Completion Hypothesis. Once an interface activates a familiar interaction grammar, the model tends to apply additional parts of that grammar, including constructs that the interface may not support.
+
+Together, these hypotheses suggest a general principle for LLM-facing interface design:
+
+Familiar grammars provide efficient representations when the grammar they evoke matches the grammar the system actually implements.
+
+Or more practically:
+
+Borrow syntax to save tokens only when you can also borrow its semantics.
+
+
+
+A Simple Model of Grammar, Cost, and Reliability
+
+The central tradeoff can be expressed as a relationship between explicit specification, grammar retrieval, interface overhead, and grammar fidelity.
+
+Let:
+
+S = information explicitly supplied by the interface, such as schemas, descriptions, examples, and argument names
+R = information recovered from a learned interaction grammar
+G = total information required to correctly construct and compose the interaction
+F = fidelity between the retrieved grammar and the grammar actually implemented by the system
+A successful interaction requires the model to recover enough information to satisfy the interface:
+
+S + R >= G
+
+An interface can therefore reduce explicit specification by relying on pretrained grammar:
+
+S ≈ G - R
+
+This is the basic source of grammar compression.
+
+Interface Overhead
+
+Not all tokens involved in a task express the task itself. Some exist only because of the interface used to express it.
+
+We call this interface overhead.
+
+Let:
+
+T_task = tokens that express information intrinsic to the task
+T_interface = tokens required to express the mechanics of using the interface
+T_total = total representation
+Then:
+
+T_total = T_task + T_interface
+
+and the interface overhead ratio can be represented as:
+
+O = T_interface / T_total
+
+Argument names, JSON keys, wrappers, tool-call syntax, repeated schemas, intermediate serialization, and other protocol structures can all contribute to interface overhead.
+
+For example, the essential computation:
+
+ls /x | grep foo | wc -l
+
+contains relatively little representational machinery beyond the operations themselves and their composition. An equivalent sequence of structured tool calls may require function names, JSON keys, argument wrappers, intermediate results, and multiple model-tool exchanges.
+
+The underlying task has not become more complex. The additional representation is interface overhead.
+
+This gives us a measurable objective:
+
+A token-efficient grammar minimizes the representational overhead required to express a task.
+
+Familiar grammars can reduce interface overhead because information about how to interpret the representation is already stored in model weights rather than repeated in the representation itself.
+
+Principle 1: Grammar provides compression
+
+The more correct interaction structure the model can recover from a learned grammar, the less of that structure must be explicitly represented.
+
+More retrievable grammar → less explicit specification → lower interface overhead
+
+A familiar shell command is an extreme example. A short expression such as:
+
+grep -c foo file
+
+depends on substantial information that does not appear explicitly in the expression. The model recovers that information from its learned grammar for grep.
+
+This suggests defining grammar leverage as the amount of interface specification that can be omitted because the model can reliably recover it from a learned grammar.
+
+High grammar leverage can reduce both prompt and generation costs.
+
+It can also reduce interface overhead directly:
+
+Higher grammar leverage → lower T_interface
+
+when the retrieved grammar accurately describes the implemented system.
+
+Principle 2: Compression creates reliance
+
+Grammar compression is not free. Every piece of information removed from the explicit interface must be reconstructed correctly by the model.
+
+As reliance on retrieved grammar increases, correctness becomes increasingly dependent on grammar fidelity:
+
+More compression → more reliance on R → greater sensitivity to F
+
+When fidelity is high, this is desirable. Pretrained knowledge replaces explicit tokens.
+
+When fidelity is low, the same compression becomes a source of error.
+
+This gives a central tradeoff:
+
+Compression benefit ∝ retrievable grammar × grammar fidelity
+
+A familiar grammar is therefore most valuable when it is both highly informative and highly faithful to the implemented interface.
+
+Principle 3: Grammar mismatch creates an error tax
+
+Let:
+
+M = 1 - F
+
+where M represents mismatch between the grammar the interface evokes and the grammar it actually implements.
+
+As grammar leverage increases, mismatch should become increasingly costly:
+
+Mismatch cost ∝ R × M
+
+This predicts that changing an obscure detail in a highly familiar interface can sometimes be worse than presenting an entirely unfamiliar interface.
+
+A model encountering an unfamiliar DSL has relatively little incorrect grammar to retrieve.
+
+A model encountering something that looks almost exactly like Unix find may retrieve a large amount of grammar with high confidence. If the implemented find behaves differently, that retrieved knowledge now competes with the actual specification.
+
+This produces the Almost-Familiar Principle:
+
+A partially compatible familiar grammar can be worse than an unfamiliar grammar because familiarity increases both useful compression and the cost of mismatch.
+
+Principle 4: Explicitness and familiarity are substitutes
+
+Explicit interface information and retrieved grammar can provide some of the same information.
+
+This predicts:
+
+Value of explicit specification decreases as reliable grammar retrieval increases.
+
+and conversely:
+
+Value of familiar naming decreases as explicit specification increases.
+
+This provides a direct explanation for the difference between command-line and structured tool interfaces.
+
+For a command-line interface, the command name may be responsible for retrieving much of the calling convention.
+
+For a structured JSON tool, the schema explicitly supplies that information. Changing the name therefore removes much less information.
+
+This produces the Specification Substitution Principle:
+
+The more grammar an interface carries explicitly, the less it should depend on familiar retrieval cues.
+
+This is directly testable by progressively adding schemas, documentation, and examples while manipulating name familiarity.
+
+Principle 5: Token efficiency is largely an interface-overhead problem
+
+Grammar compression gives us a more precise way to reason about token efficiency.
+
+The question is not simply:
+
+Which syntax uses fewer tokens?
+
+The more useful question is:
+
+How many tokens does the interface require beyond the information intrinsic to the task?
+
+Suppose two interfaces solve the same task. The task information is approximately constant. Differences in representation length therefore largely reflect differences in interface overhead.
+
+This suggests measuring:
+
+Representational overhead = T_total - T_task
+
+and:
+
+Overhead ratio = T_interface / T_total
+
+A highly compressed learned grammar should reduce both.
+
+This produces the Interface Overhead Principle:
+
+A good tool grammar minimizes the tokens spent describing how to express a computation rather than the computation itself.
+
+This is where shell-like grammars may have a substantial advantage. They were designed to express operations and composition compactly, and language models have extensive pretrained knowledge of their conventions.
+
+The resulting representation can therefore be both intrinsically compact and highly recoverable from model weights.
+
+The important qualification is grammar fidelity.
+
+Low overhead achieved by omitting information is useful only when the model can reconstruct that information correctly.
+
+Principle 6: Composition grammar creates increasing value with task depth
+
+Grammar compression applies not only to individual calls but also to their composition.
+
+Let:
+
+n = number of dependent operations required by a task
+
+In a one-call-per-turn architecture, increasing n can increase model turns, serialization, intermediate context, and repeated tool invocation overhead.
+
+A composition language can encode those dependencies inside a single generated program.
+
+For shallow tasks, the difference may be small.
+
+For deeper tasks:
+
+Value of composition grammar ↑ as task depth n ↑
+
+This suggests the Composition Leverage Principle:
+
+The value of a compact host grammar should increase with the depth and interdependence of the computation being expressed.
+
+This predicts that structured one-call tool use may perform extremely well for simple tasks while JavaScript, Python, or shell-like composition becomes increasingly efficient as tasks require more operations, intermediate values, loops, conditions, or transformations.
+
+This also introduces a second form of interface overhead: interaction overhead.
+
+A representation can be compact at the level of individual calls while still requiring many model-tool turns.
+
+We can therefore distinguish:
+
+Representational overhead — extra tokens required by the syntax and representation.
+
+Interaction overhead — extra turns, intermediate results, and repeated context required to execute the representation.
+
+A composition grammar can reduce both.
+
+Principle 7: Measure cost per successful task
+
+The shortest representation is not necessarily the cheapest interface.
+
+Let effective interaction cost be:
+
+C_eff = C_spec + C_repr + C_result + C_turn + C_repair
+
+where:
+
+C_spec = cost of supplying tool definitions, schemas, documentation, and examples
+C_repr = representational overhead required to express tool calls and composition
+C_result = cost of representing intermediate tool results
+C_turn = cost created by additional model-tool interaction turns
+C_repair = cost of correcting invalid or unsuccessful interactions
+A compressed familiar grammar can reduce C_spec, C_repr, and C_turn.
+
+But grammar mismatch can increase C_repair.
+
+The relevant optimization objective is therefore:
+
+minimize C_eff subject to an acceptable probability of task success
+
+Or, when comparing systems empirically:
+
+Effective cost per success = total interaction cost / successful tasks
+
+This produces the Effective Cost Principle:
+
+The best tool grammar is the one that minimizes total cost per successful task, not the one that produces the shortest individual call.
+
+This distinction matters because an interface that uses 30% fewer tokens when it works may still be more expensive overall if grammar mismatch causes enough failed calls and repairs.
+
+The Central Tradeoff
+
+These principles reduce to a simple relationship:
+
+Learned grammar is compressed interface specification.
+
+A model can obtain the information required to use an interface from two broad sources:
+
+Explicit representation — put the information into the context and pay the interface overhead.
+
+Grammar retrieval — rely on information already encoded in the model and compress the representation.
+
+When the learned grammar matches the implemented grammar:
+
+familiarity → retrieval → compression → lower interface overhead → fewer tokens and turns
+
+When the learned grammar does not match the implemented grammar:
+
+familiarity → retrieval → incorrect assumptions → errors → repairs → higher effective cost
+
+The central design variables are therefore grammar leverage, grammar fidelity, and interface overhead.
+
+They describe three different questions:
+
+Grammar leverage: How much information can we avoid explicitly representing because the model already knows it?
+
+Grammar fidelity: How accurately does that retrieved knowledge describe the interface we actually implemented?
+
+Interface overhead: How much representation and interaction do we spend on the mechanics of using the interface rather than on the task itself?
+
+This suggests a useful conceptual map.
+
+High leverage + high fidelity
+The ideal use of a familiar grammar. Large reductions in interface overhead with low error.
+
+Low leverage + high fidelity
+Safe, but provides relatively little compression.
+
+Low leverage + low fidelity
+Limited benefit, but limited damage because little behavior depends on retrieved grammar.
+
+High leverage + low fidelity
+The dangerous case. The representation is highly compressed because it assumes the model knows the grammar, but the grammar it retrieves does not accurately describe the system. Errors and repair costs can overwhelm the token savings.
+
+Headline Principles
+
+The framework can therefore be summarized in several testable principles.
+
+1. Grammar Compression
+Learned grammar is compressed interface specification.
+
+2. Grammar Leverage
+The more correct interface information a model can retrieve from pretraining, the less must be explicitly represented.
+
+3. Interface Overhead
+Token efficiency should be measured by how much representation is spent on interface mechanics rather than task information.
+
+4. Grammar Fidelity
+Compression is beneficial only to the extent that retrieved grammar matches implemented grammar.
+
+5. Mismatch Cost
+The cost of grammar mismatch increases with the amount of behavior delegated to the learned grammar.
+
+6. Specification Substitution
+Explicit schemas, documentation, and examples reduce dependence on pretrained grammar.
+
+7. Composition Leverage
+The value of a compact composition grammar increases with task depth and interdependence.
+
+8. Effective Cost
+Interfaces should be compared by total cost per successful task, including representation, turns, intermediate results, failures, and repairs.
+
+Design Principle
+
+The overall optimization problem is therefore not simply:
+
+Use the fewest tokens.
+
+It is:
+
+Minimize interface overhead while maintaining grammar fidelity and acceptable reliability.
+
+Or, expressed as a design rule:
+
+Maximize grammar leverage where grammar fidelity is high; spend explicit tokens where it is not.
+
+And in practical terms:
+
+Use what the model already knows to compress the interface—but only where what the model knows is true.
+
+
+Interaction Grammars
+
+We distinguish three related sources of grammar in a tool interface.
+
+Command grammar
+
+Command grammar determines how an individual operation is expressed.
+
+For example:
+
+grep -c pattern file
+
+The name grep can retrieve knowledge about valid flags, positional arguments, stdin behavior, and output semantics.
+
+Different commands can therefore have different command grammars even though they exist within the same host environment.
+
+Composition grammar
+
+Composition grammar determines how individual operations can be combined.
+
+For example:
+
+ls /x | grep foo | wc -l
+
+The shell supplies rules for pipelines, redirects, variables, sequencing, and data flow. Python or JavaScript supplies different composition grammars involving function calls, variables, loops, conditionals, collections, and intermediate values.
+
+Command grammar and composition grammar can therefore be retrieved independently. A familiar command can appear inside an unfamiliar composition language, or unfamiliar operations can be composed using a highly familiar host language.
+
+Carried grammar
+
+An interface can also explicitly carry grammar that would otherwise need to be retrieved.
+
+A structured tool schema can specify that an operation takes a path string, a recursive boolean, and a query string. A worked example can similarly establish a novel calling convention at the point where it is needed.
+
+Carried grammar trades additional context tokens for reduced dependence on pretrained knowledge.
+
+These mechanisms are not mutually exclusive. A single tool system can combine all three.
+
+Relationship to Prior Research
+
+Prior research supports several components of this account.
+
+Work on identifier names suggests that meaningful names provide language models with information beyond program structure. Experiments that obfuscate identifiers show substantial degradation when meaningful names are removed, including in settings where identifiers are formally arbitrary. This supports the idea that familiar names can act as retrieval cues into pretrained knowledge.
+
+When Names Disappear: Revealing What LLMs Actually Understand About Code
+https://arxiv.org/abs/2510.03178
+
+Research on zero-shot tool use demonstrates the complementary result: models can learn previously unseen interfaces from documentation supplied at inference time. Tool documentation can provide enough information for models to correctly invoke tools without prior demonstrations.
+
+Tool Documentation Enables Zero-Shot Tool Usage with Large Language Models
+https://arxiv.org/abs/2308.00675
+
+Together, these findings establish two important mechanisms: information can be retrieved from familiar interface cues, or it can be explicitly supplied in context.
+
+What remains less understood is how these mechanisms interact.
+
+In particular, existing work does not fully explain why familiar naming should matter dramatically in one interface but only weakly in another, how command grammar and composition grammar interact, or what happens when an interface evokes a familiar grammar but implements only part of it.
+
+Our hypothesis is that these effects can be explained by treating pretrained interaction grammars as an implicit source of interface specification.
+
+Preliminary Evidence
+
+Our initial experiments provide several observations consistent with this account.
+
+Familiar command names produce highly reliable command syntax
+
+When command-line tools retained familiar Unix names, the model reliably generated the expected syntax.
+
+For ls, command-line calls were refused only 1 time in 338 attempts. For read, they were refused 0 times in 307 attempts.
+
+The model generally generated appropriate flags and argument structures without those conventions needing to be repeatedly described.
+
+This is consistent with familiar names retrieving learned command grammars.
+
+Errors concentrate where familiar grammar stops applying
+
+Errors increased where our interfaces extended familiar commands with unfamiliar semantics.
+
+The clearest example was adding SQL behavior to find. Of 67 argument refusals, 25 involved find with SQL.
+
+This is consistent with a boundary effect: the familiar find name retrieves a useful grammar until the implemented interface departs from the grammar associated with that name.
+
+Models complete familiar grammars beyond what was specified
+
+The models also generated constructs that were never included in the interface description.
+
+In command-line interfaces, they generated shell pipes and redirects.
+
+In ToolScript, they generated JavaScript constructs such as arrow functions and JSON.stringify.
+
+This suggests that recognizing an interface as shell-like or JavaScript-like activates more than the explicitly supported subset. The model appears to retrieve and use the broader composition grammar.
+
+This observation motivated the Grammar-Completion Hypothesis.
+
+Novel grammar can be supplied locally
+
+Our experiments also provide evidence that pretrained familiarity is not required.
+
+In the tree-surface experiments, act used argument structures created specifically for our system. After a read operation exposed a worked example, the model proceeded directly from the example to a correct act call in every close_deal run.
+
+This suggests that when no appropriate pretrained grammar exists, grammar can instead be carried through local examples.
+
+Structured calls reduce dependence on names
+
+Our previous one-call-per-turn experiments found substantially less sensitivity to tool naming when calls were expressed through structured schemas.
+
+This is consistent with the proposed explanation. When the schema explicitly supplies argument structure, less grammar must be retrieved from the name.
+
+The contrast between structured calls and command-line calls therefore may not primarily reflect one representation being more familiar than another. It may reflect a difference in where the grammar is represented.
+
+From Grammar Retrieval to Interface Efficiency
+
+The same framework may explain differences in token and turn efficiency.
+
+A structured interface explicitly represents substantial information:
+
+tool descriptions,
+argument names,
+argument types,
+JSON structure,
+intermediate results,
+and repeated model/tool transitions.
+
+A familiar grammar can move some of this information out of the context and into pretrained model knowledge.
+
+This creates grammar compression: information necessary to interpret an operation does not need to appear explicitly because it can be reconstructed from a learned grammar.
+
+There are at least two forms of this compression.
+
+Call compression
+
+Call compression measures how compactly an individual operation can be represented.
+
+A familiar command such as:
+
+grep -c foo file
+
+may encode the same operation in substantially fewer tokens than an equivalent structured representation.
+
+Composition compression
+
+Composition compression measures how compactly multiple operations and their dependencies can be represented.
+
+This may be even more consequential.
+
+A structured system that permits one tool call per model turn may require several model-tool round trips for a multi-step task.
+
+A host language can express the entire computation in a single generation.
+
+Shell can sometimes compress this further:
+
+ls /x | grep foo | wc -l
+
+The benefit of a host grammar should therefore increase as task depth and compositional complexity increase.
+
+This produces another testable prediction:
+
+The relative efficiency advantage of a familiar composition grammar should increase with the number of dependent operations required by a task.
+
+Research Questions
+
+The preliminary results motivate five primary research questions.
+
+RQ1: When do familiar names matter?
+
+Does the importance of a familiar tool name depend on how much command grammar must be retrieved from pretraining?
+
+RQ2: Can command grammar transfer independently of command names?
+
+If a familiar command is renamed but retains familiar flags and argument conventions, how much performance is preserved?
+
+RQ3: Do models complete familiar grammars?
+
+When an interface resembles shell, Python, or JavaScript but supports only a subset of that language, how frequently do models generate unsupported constructs from the full learned grammar?
+
+RQ4: Can partial familiarity be worse than unfamiliarity?
+
+Does a mostly familiar but incompatible interface produce more errors than an obviously novel interface whose grammar is explicitly supplied?
+
+RQ5: What efficiency does learned grammar provide?
+
+How do different interfaces affect syntax tokens, context tokens, generated tokens, model turns, tool calls, repairs, and total cost per successful task?
+
+Experimental Plan
+
+The central experiment independently manipulates three dimensions.
+
+Name familiarity
+
+Canonical:
+
+find
+
+Descriptive but novel:
+
+search_content
+
+Opaque:
+
+qovrex
+
+Grammar familiarity
+
+Canonical Unix grammar:
+
+find -l /x
+
+Familiar grammar with opaque name:
+
+qovrex -l /x
+
+Novel grammar:
+
+qovrex --zorp /x
+
+A particularly important adversarial condition combines a familiar name with incompatible grammar:
+
+find --zorp /x
+
+If models continue attempting conventional find syntax despite explicit documentation of --zorp, this would provide direct evidence that the name activates a grammar prior that competes with the supplied specification.
+
+Grammar availability
+
+No additional documentation.
+
+Explicit documentation or schema.
+
+One worked example.
+
+These manipulations allow name familiarity, grammar familiarity, and explicit instruction to be separated experimentally.
+
+Testing Grammar Completion
+
+A second experiment would vary how completely an interface implements a familiar grammar.
+
+For example:
+
+100% compatible
+
+75% compatible
+
+50% compatible
+
+25% compatible
+
+Clearly novel
+
+We would measure both task success and the generation of familiar but unsupported constructs.
+
+A particularly interesting outcome would be a non-monotonic relationship in which a completely unfamiliar interface outperforms an interface that is mostly, but not completely, compatible with a familiar language.
+
+This would support the prediction:
+
+Almost familiar can be worse than unfamiliar.
+
+Measuring Interface Efficiency
+
+Correctness alone is insufficient for evaluating these interfaces.
+
+We propose measuring:
+
+raw syntax tokens,
+tool-definition and schema tokens,
+generated tokens,
+tool-result tokens,
+number of model turns,
+number of tool calls,
+repair attempts,
+task success,
+and total tokens per successful task.
+
+These measures can be combined into an effective interaction cost: the total representational and interaction cost required to successfully complete a task.
+
+This allows grammar compression to be measured rather than inferred.
+
+A familiar grammar may use fewer tokens when successful but still have a higher effective interaction cost if grammar mismatches cause frequent repairs. Conversely, a more verbose structured interface may ultimately be cheaper if it substantially reduces errors.
+
+The relevant optimization target is therefore not minimum syntax length.
+
+It is:
+
+Minimize effective interaction cost subject to acceptable reliability.
+
+Expected Contribution
+
+The proposed work would connect several observations that are currently treated separately.
+
+Names can retrieve knowledge from pretraining.
+
+Schemas and examples can explicitly supply interface knowledge.
+
+Familiar languages provide powerful composition mechanisms.
+
+Compact representations can reduce token and turn costs.
+
+Familiar-looking but incompatible interfaces can cause models to generate unsupported behavior.
+
+The proposed theory treats these as consequences of a common mechanism: language models use interface cues to retrieve learned interaction grammars and combine those grammars with information explicitly carried by the interface.
+
+This leads to a general model of LLM-facing interface design:
+
+Cue → Grammar Retrieval → Composition → Execution
+
+When retrieved grammar, carried grammar, and implemented grammar agree, pretrained knowledge acts as compression. The interface can be shorter, require fewer examples, and potentially express multi-step computation in fewer model turns.
+
+When they disagree, the same mechanism creates systematic errors because the model reconstructs omitted information from an incorrect prior.
+
+The resulting design principle is:
+
+Use learned grammar as compression where its semantics are correct. Make differences explicit where they are not.
+
+Or, more succinctly:
+
+Borrow syntax to save tokens only when you can also borrow its semantics.

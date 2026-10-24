@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Condition D (Near-Miss Grammar) Experiment: Testing the Familiar-Name-With-Wrong-Grammar Hypothesis</title>
+  <style>
+/* Base Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Root Variables - Light Mode */
+:root {
+  
+    --bg-color: #ffffff;
+    --text-color: #37352f;
+    --muted-color: #787774;
+    --heading-color: #37352f;
+    --link-color: #37352f;
+    --border-color: #e9e9e7;
+    --code-bg: #f7f6f3;
+    --accent-color: #2eaadc;
+  
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    
+    --bg-color: #ffffff;
+    --text-color: #37352f;
+    --muted-color: #787774;
+    --heading-color: #37352f;
+    --link-color: #37352f;
+    --border-color: #e9e9e7;
+    --code-bg: #f7f6f3;
+    --accent-color: #2eaadc;
+  
+  }
+}
+
+/* Body */
+body {
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Article Container */
+article {
+  max-width: 100%;
+}
+
+/* Typography - Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+  color: var(--heading-color);
+  margin-top: 1.75em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 2.25em;
+  margin-top: 0;
+  padding-bottom: 0.5em;
+  border-bottom: 2px solid var(--border-color);
+}
+
+h2 {
+  font-size: 1.65em;
+  padding-bottom: 0.35em;
+  border-bottom: 1px solid var(--border-color);
+}
+
+h3 { font-size: 1.35em; }
+h4 { font-size: 1.15em; }
+h5 { font-size: 1em; }
+h6 { font-size: 0.9em; color: var(--muted-color); }
+
+/* Paragraphs */
+p {
+  margin: 1.25em 0;
+}
+
+/* Links */
+a {
+  color: var(--link-color);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Strong and Emphasis */
+strong { font-weight: 600; }
+em { font-style: italic; }
+
+/* Inline Code */
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  background-color: var(--code-bg);
+  color: var(--text-color);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  word-break: break-word;
+}
+
+/* Code Blocks */
+pre {
+  background-color: var(--code-bg);
+  padding: 1.25rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1.5em 0;
+  line-height: 1.5;
+}
+
+pre code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 14px;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+  line-height: inherit;
+  white-space: pre;
+  word-break: normal;
+}
+
+/* Line Numbers for Code Blocks */
+
+
+/* Blockquotes */
+blockquote {
+  border-left: 4px solid var(--accent-color);
+  margin: 1.5em 0;
+  padding: 0.75em 1.25em;
+  color: var(--muted-color);
+  background-color: color-mix(in srgb, var(--code-bg) 50%, transparent);
+  border-radius: 0 8px 8px 0;
+}
+
+blockquote p {
+  margin: 0.5em 0;
+}
+
+blockquote p:first-child { margin-top: 0; }
+blockquote p:last-child { margin-bottom: 0; }
+
+/* Lists */
+ul, ol {
+  margin: 1.25em 0;
+  padding-left: 1.75em;
+}
+
+li {
+  margin: 0.35em 0;
+}
+
+li > ul, li > ol {
+  margin: 0.35em 0;
+}
+
+/* Task Lists */
+ul.task-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul.task-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.95em;
+}
+
+thead {
+  background-color: var(--code-bg);
+}
+
+th, td {
+  border: 1px solid var(--border-color);
+  padding: 0.75em 1em;
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+  color: var(--heading-color);
+}
+
+tbody tr:nth-child(even) {
+  background-color: color-mix(in srgb, var(--code-bg) 30%, transparent);
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1em 0;
+}
+
+/* Horizontal Rules */
+hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 2.5em 0;
+}
+
+/* Metadata */
+.metadata {
+  color: var(--muted-color);
+  font-size: 0.875em;
+  margin-bottom: 2em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75em;
+  align-items: center;
+}
+
+.metadata .path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background-color: var(--code-bg);
+  padding: 0.25em 0.5em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.metadata .status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.2em 0.6em;
+  border-radius: 9999px;
+  font-size: 0.8em;
+  font-weight: 500;
+  background-color: var(--code-bg);
+}
+
+.metadata .tags {
+  display: flex;
+  gap: 0.35em;
+}
+
+.metadata .tag {
+  padding: 0.15em 0.5em;
+  border-radius: 4px;
+  font-size: 0.8em;
+  background-color: color-mix(in srgb, var(--accent-color) 15%, transparent);
+  color: var(--accent-color);
+}
+
+/* Table of Contents */
+.toc {
+  background-color: var(--code-bg);
+  padding: 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 2em;
+}
+
+.toc h2 {
+  margin-top: 0;
+  border-bottom: none;
+  font-size: 1rem;
+  margin-bottom: 0.75em;
+}
+
+.toc ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.toc ul ul {
+  padding-left: 1.25em;
+}
+
+.toc li {
+  margin: 0.35em 0;
+}
+
+.toc a {
+  color: var(--text-color);
+}
+
+.toc a:hover {
+  color: var(--link-color);
+}
+
+/* Print Styles */
+@media print {
+  body {
+    max-width: none;
+    padding: 0;
+    background: white;
+    color: black;
+  }
+
+  a { color: inherit; }
+
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  h1, h2, h3 { page-break-after: avoid; }
+  pre, table, blockquote, img { page-break-inside: avoid; }
+}
+
+/* Syntax Highlighting - github */
+
+    .hljs-comment, .hljs-quote { color: #6e7781; font-style: italic; }
+    .hljs-keyword, .hljs-selector-tag { color: #cf222e; font-weight: 500; }
+    .hljs-string, .hljs-attr { color: #0a3069; }
+    .hljs-number, .hljs-literal { color: #0550ae; }
+    .hljs-function, .hljs-title { color: #8250df; }
+    .hljs-built_in, .hljs-type { color: #0550ae; }
+    .hljs-class, .hljs-title.class_ { color: #953800; }
+    .hljs-variable, .hljs-template-variable { color: #953800; }
+    .hljs-meta { color: #0550ae; }
+    .hljs-tag { color: #116329; }
+  
+
+/* Custom Template Styles */
+
+    h1, h2, h3 {
+      font-weight: 700;
+      margin-top: 2em;
+    }
+    h1 { font-size: 2.5em; border-bottom: none; }
+    h2 { font-size: 1.875em; border-bottom: none; }
+    h3 { font-size: 1.5em; }
+    a {
+      text-decoration: underline;
+      text-decoration-color: color-mix(in srgb, var(--link-color) 50%, transparent);
+    }
+    a:hover {
+      background: color-mix(in srgb, var(--accent-color) 10%, transparent);
+    }
+    code:not(pre code) {
+      color: #eb5757;
+      background: rgba(135,131,120,0.15);
+    }
+    pre {
+      border-radius: 4px;
+    }
+    blockquote {
+      font-size: 1.2em;
+      border-left-width: 3px;
+      border-left-color: var(--text-color);
+      background: transparent;
+    }
+    table {
+      border: none;
+    }
+    th, td {
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+    }
+    th {
+      background: transparent;
+      font-weight: 600;
+      text-transform: none;
+    }
+  
+/* Custom CSS */
+
+@page {
+  size: A4;
+  margin: 2cm;
+}
+
+:root {
+  --bg-color: #ffffff;
+  --text-color: #1a1a1a;
+  --muted-color: #6b7280;
+  --border-color: #e5e7eb;
+  --code-bg: #f3f4f6;
+  --link-color: #2563eb;
+  --heading-color: #111827;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  font-size: 11pt;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--heading-color);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.3;
+  page-break-after: avoid;
+}
+
+h1 { font-size: 18pt; border-bottom: 2px solid var(--border-color); padding-bottom: 0.5rem; }
+h2 { font-size: 14pt; border-bottom: 1px solid var(--border-color); padding-bottom: 0.3rem; }
+h3 { font-size: 12pt; }
+h4 { font-size: 11pt; }
+
+p { margin: 0.8rem 0; }
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+code {
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
+  font-size: 9pt;
+  background-color: var(--code-bg);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+
+pre {
+  background-color: var(--code-bg);
+  padding: 0.8rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0.8rem 0;
+  page-break-inside: avoid;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  font-size: 8pt;
+}
+
+blockquote {
+  border-left: 3px solid var(--border-color);
+  margin: 0.8rem 0;
+  padding: 0.3rem 0.8rem;
+  color: var(--muted-color);
+  background-color: var(--code-bg);
+}
+
+ul, ol {
+  margin: 0.8rem 0;
+  padding-left: 1.5rem;
+}
+
+li { margin: 0.2rem 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.8rem 0;
+  page-break-inside: avoid;
+}
+
+th, td {
+  border: 1px solid var(--border-color);
+  padding: 0.4rem;
+  text-align: left;
+  font-size: 10pt;
+}
+
+th {
+  background-color: var(--code-bg);
+  font-weight: 600;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  page-break-inside: avoid;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 1.5rem 0;
+}
+
+.metadata {
+  color: var(--muted-color);
+  font-size: 9pt;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.metadata .path {
+  font-family: monospace;
+  background-color: var(--code-bg);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+</style>
+</head>
+<body>
+  <article>
+    <h1>Condition D (Near-Miss Grammar) Experiment: Testing the Familiar-Name-With-Wrong-Grammar Hypothesis</h1>
+    <div class="metadata"><span class="path">/research/tool-naming/condition-d-near-miss-grammar/condition-d-near-miss-grammar.md</span></div>
+    <h1>Condition D ("Near-Miss Grammar") Experiment: Results</h1>
+<h2>The Hypothesis Being Tested</h2>
+<p>The user's hypothesis: <em>using existing Linux tool names causes agents to use grammar correctly, which provides a slight optimization over clearly non-Linux-command names — but this isn't worth the risk, because if the tool is slightly off grammar-wise from what the agent knows, that mismatch would cost MORE in tokens and success rate than just using an unfamiliar name.</em></p>
+<p>In short: <strong>familiar name + wrong grammar should be WORSE than unfamiliar name + same (correct, documented) grammar</strong>, because the model's prior knowledge actively interferes rather than helps.</p>
+<h2>Experiment Design</h2>
+<p>Added <strong>Condition D</strong> to the existing Study-1 codebase (<code>src/</code>): reuses the exact real Unix names (<code>ls</code>, <code>find</code>, <code>grep</code>, <code>cat</code>, <code>wc</code>) from condition A-full, but documents a <strong>swapped argument order</strong> for <code>find</code> (P2) and <code>grep</code> (P3) relative to the real Unix convention:</p>
+<ul>
+<li>Real/A-full: <code>find(root, pattern)</code>, <code>grep(pattern, path)</code></li>
+<li>D (documented): <code>find(pattern, root)</code>, <code>grep(path, pattern)</code></li>
+</ul>
+<p>This directly operationalizes <code>experiments.txt</code>'s Experiment C methodology ("a familiar command's rules are changed and documented — does the familiar name make the model worse than an unfamiliar name taught the same rules?") inside this project's own harness, so it's directly comparable to the existing A-full/B/C shell cells.</p>
+<p>Implementation (<code>src/naming.py</code>, <code>src/dispatch.py</code>, <code>src/shell_sim.py</code>, <code>src/harness_shell.py</code>, <code>src/run_experiment.py</code>, <code>src/analyze_results.py</code>): added condition D's manuals/signatures, made the dispatcher accept/execute calls in D's documented order, and added an <code>old_form_grammar</code> detector that flags whenever a P2/P3 call's argument order looks like the REAL/old convention instead of D's documented swapped one (the direct behavioral signature of grammar interference). All 9 existing mock harness tests still pass (no regressions).</p>
+<p><strong>Scope:</strong> shell interface only, since Study 1 found naming effects were concentrated there (sequential/scripted were flat). 72 trials: 24 tasks × 3 seeds, run against the same model/proxy (<code>gpt-6-luna</code> via the Luna proxy) as the original Study 1.</p>
+<h2>Results</h2>
+<h3>Success rate and token cost (shell interface, all 4 conditions)</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Condition</th>
+      <th>n</th>
+      <th>Success%</th>
+      <th>Avg tokens</th>
+      <th>Avg turns</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A-full (real names, real grammar)</td>
+      <td>72</td>
+      <td>61.1%</td>
+      <td>1575</td>
+      <td>2.31</td>
+    </tr>
+    <tr>
+      <td>B (descriptive names)</td>
+      <td>72</td>
+      <td>45.8%</td>
+      <td>2009</td>
+      <td>2.50</td>
+    </tr>
+    <tr>
+      <td>C (random names)</td>
+      <td>72</td>
+      <td>41.7%</td>
+      <td>2234</td>
+      <td>2.58</td>
+    </tr>
+    <tr>
+      <td><strong>D (real names, SWAPPED grammar)</strong></td>
+      <td>72</td>
+      <td><strong>61.1%</strong></td>
+      <td><strong>1915</strong></td>
+      <td>2.40</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Breakdown by tier</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Condition</th>
+      <th>Tier</th>
+      <th>Success%</th>
+      <th>Avg tokens</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A-full</td>
+      <td>T1 (single-hop)</td>
+      <td>87.5%</td>
+      <td>1254</td>
+    </tr>
+    <tr>
+      <td>D</td>
+      <td>T1</td>
+      <td>87.5%</td>
+      <td>1493</td>
+    </tr>
+    <tr>
+      <td>B</td>
+      <td>T1</td>
+      <td>66.7%</td>
+      <td>1568</td>
+    </tr>
+    <tr>
+      <td>C</td>
+      <td>T1</td>
+      <td>66.7%</td>
+      <td>1916</td>
+    </tr>
+    <tr>
+      <td>A-full</td>
+      <td>T2 (aggregate)</td>
+      <td>83.3%</td>
+      <td>1761</td>
+    </tr>
+    <tr>
+      <td>D</td>
+      <td>T2</td>
+      <td>83.3%</td>
+      <td>1793</td>
+    </tr>
+    <tr>
+      <td>B</td>
+      <td>T2</td>
+      <td>58.3%</td>
+      <td>2083</td>
+    </tr>
+    <tr>
+      <td>C</td>
+      <td>T2</td>
+      <td>45.8%</td>
+      <td>2172</td>
+    </tr>
+    <tr>
+      <td>A-full</td>
+      <td>T3 (composed)</td>
+      <td>12.5%</td>
+      <td>1712</td>
+    </tr>
+    <tr>
+      <td>D</td>
+      <td>T3</td>
+      <td>12.5%</td>
+      <td>2460</td>
+    </tr>
+    <tr>
+      <td>B</td>
+      <td>T3</td>
+      <td>12.5%</td>
+      <td>2375</td>
+    </tr>
+    <tr>
+      <td>C</td>
+      <td>T3</td>
+      <td>12.5%</td>
+      <td>2614</td>
+    </tr>
+  </tbody>
+</table>
+<p>(Tier-3 flatlines at 12.5% for ALL conditions — a known structural limitation of the simplified shell grammar's inability to express 2-step joins, not a naming effect; confirmed below.)</p>
+<h3>The critical measurement: old<em>form</em>grammar rate</h3>
+<p><strong>0 out of 72 D trials (0.0%) showed any instance of the model reverting to the real/old <code>find</code>/<code>grep</code> argument order.</strong> Manual inspection of first-turn commands across all 24 tasks confirms the model consistently used D's documented swapped order correctly (e.g. <code>grep(&quot;/packages&quot;, &quot;deprecated&quot;)</code>, <code>find(&quot;*/meta.json&quot;, &quot;/packages&quot;)</code> — pattern/path-first as documented, not the real Unix order).</p>
+<p>All 8 of D's <code>invalid_name</code> failures were in Tier-3 tasks and are the same known failure mode as A-full/B/C's Tier-3 failures (model attempts a 2-step pipeline the simplified shell grammar can't express) — none were argument-order reversions (<code>old_form_grammar=False</code> for all 8).</p>
+<h2>Interpretation: the hypothesis is NOT supported in this harness</h2>
+<ol>
+<li><strong>H1 (success(D) < success(B,C)) — REJECTED.</strong> D's success rate (61.1%) matches A-full exactly and is <em>substantially higher</em> than both B (45.8%) and C (41.7%). A familiar name with changed-but-documented grammar did not perform worse than fully unfamiliar names here — it performed as well as the condition with correct familiar grammar.</li>
+<li><strong>H2 (tokens(D) > tokens(B,C)) — REJECTED.</strong> D's average tokens (1915) are <em>lower</em> than both B (2009) and C (2234), not higher.</li>
+<li><strong>H3 (high old-form reversion rate in D) — REJECTED.</strong> The reversion rate was exactly 0%. The model never exhibited the "muscle memory" interference effect the hypothesis predicts.</li>
+</ol>
+<p><strong>The dominant driver of success/cost in this harness is clearly the <code>invalid_name</code> error rate from unfamiliar NAMES</strong> (B: 25/72, C: 24/72 invalid_name errors vs. A-full: 5/72, D: 8/72 — and D's 8 are all Tier-3 structural, not grammar-order errors) — not grammar/argument-order fidelity. The model appears to read and follow the documented argument order for D reliably, regardless of whether it conflicts with the real-world Unix convention, because the manual text is right there in context on every turn (shown via <code>render_full_manual</code> in the system prompt) and the single-shot "write one command, see the error, get one repair turn" protocol gives it an explicit correction loop even if it slips.</p>
+<h2>Why this differs from Experiment C's finding</h2>
+<code>experiments.txt</code>'s Experiment C <em>did</em> find a real-name penalty (real −7 to −10 points vs random, when rules changed) on a different generic harness (issue-tracker/<code>jq</code>-style tools). Plausible explanations for the discrepancy:
+<ul>
+<li><strong>Task family / tool familiarity</strong>: Experiment C's <code>jq</code> filter-ordering habit was called out as the primary driver of that effect ("Three biggest threats" section) — <code>jq</code>'s own grammar is unusually deeply ingrained and its filter-first idiom may be a stronger prior than <code>find</code>/<code>grep</code>'s two-argument ordering.</li>
+<li><strong>Documentation visibility</strong>: this harness's <code>render_full_manual</code> puts the corrected signature directly in the system prompt every turn, with an explicit "NOT {name}(old_order)" contrastive line — a stronger/clearer correction cue than may have been used in Experiment C's setup.</li>
+<li><strong>Repair-turn structure</strong>: this harness's one-repair-attempt protocol with explicit error feedback may let the model self-correct order mistakes before they're ever recorded, which is consistent with 0% final old-form reversion despite the opportunity to slip.</li>
+<li><strong>Model</strong>: Experiment C's exact model is not confirmed to be the same <code>gpt-6-luna</code> used here.</li>
+</ul>
+<h2>Practical conclusion for the user's design question</h2>
+<p>Within this harness/model: <strong>reusing real Unix names with a documented grammar change was never worse than inventing new names, and performed identically to using Unix names with the correct grammar.</strong> The clear risk from this data is <strong>unfamiliar NAMES causing invalid_name errors</strong>, not grammar-order interference from familiar names. If forced to choose between "familiar name + non-standard args" and "fully novel name + same args," this experiment suggests the former is at least as safe, and likely preferable, for this harness/task family — the opposite conclusion from the user's stated hypothesis, though consistent with Study 1's own headline finding that <code>invalid_name</code> errors (not grammar misuse) drove the naming effect for shell.</p>
+<h2>Caveats</h2>
+<ul>
+<li>Single model (<code>gpt-6-luna</code>), single run per cell/seed combination (no bootstrap/CI), 24 tasks × 3 seeds = still a modest sample for Tier-3 (n=24 per condition).</li>
+<li>Only one "near-miss" severity level tested (full 2-argument swap on 2 of 5 primitives) — Experiment C found effects scaled with how many rules changed; a milder single-flag-rename analog was not tested here.</li>
+<li><code>old_form_grammar</code> detection is a heuristic (based on whether the first positional arg looks path-like) — robust for this primitive set's args (patterns never start with <code>/</code>, paths always do, per <code>vfs.py</code>), but not a general-purpose grammar classifier.</li>
+<li>Only the shell interface was tested (by design, since sequential/scripted showed no naming effect in Study 1) — it's possible a near-miss effect would surface differently in multi-turn tool-calling, where the model sees its own prior (correct) calls as few-shot context.</li>
+</ul>
+  </article>
+</body>
+</html>
