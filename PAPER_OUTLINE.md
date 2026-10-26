@@ -5,18 +5,17 @@
 
 This document synthesizes all experiments conducted under this project into a single
 paper abstract and outline. Sources: `ALL_RESULTS.md` (this session's Experiments 1-6,
-jq/sed/cross-model sticky-idiom line), the Majk knowledge base (original Study 1
-naming×interface experiment, Condition D/D2), and `experiments.txt`/`prelim_results.txt`
-(Jules White's theoretical framework and Experiments A-H/0/8).
+jq/sed/cross-model sticky-idiom line) and the Majk knowledge base (original Study 1
+naming×interface experiment, Condition D/D2), plus a related, independently-run
+theoretical/experimental line (not included in this public repo) proposing a formal
+model of documentation cost vs. tool-naming interference and a companion Experiment
+A-H/0/8 program.
 
-**Correspondence note:** `prelim_results.txt` is the theoretical paper draft proposing a
-formal model (S + R ≥ G) and a numbered Experiment 0-9 program. `experiments.txt`'s
-Experiments A-H/0/8 are the results for that program: A/B→Exp1/5, C→Exp2, D→Exp3,
-E→Exp4, F→Exp6, G→Exp9, H→Exp7. This session's own Exp1-6 (jq/sed/cross-model, in
+**Correspondence note:** this session's own Exp1-6 (jq/sed/cross-model, in
 `ALL_RESULTS.md`) is an independent, more rigorous causal follow-up to exactly one node
-of that program — Experiment C's "familiar name is worse when rules change" jq finding —
-adding multi-turn repair, a documentation-degradation ladder, and the cross-model test
-the theory paper explicitly flags as missing.
+of that related program — the "familiar name is worse when rules change" jq finding —
+adding multi-turn repair, a documentation-degradation ladder, and a cross-model
+replication test.
 
 ---
 

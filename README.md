@@ -8,9 +8,7 @@ accessed through the Anthropic API.
 
 **Start here for results:** [`ALL_RESULTS.md`](ALL_RESULTS.md) (compiled
 write-up of Experiments 1-6) and [`PAPER_OUTLINE.md`](PAPER_OUTLINE.md)
-(abstract + outline synthesizing this work with a related, independent
-experiment line in [`experiments.txt`](experiments.txt) /
-[`prelim_results.txt`](prelim_results.txt)).
+(paper abstract + outline synthesizing this work).
 
 ## Repository layout
 
@@ -21,12 +19,6 @@ results/        Raw trial-level output (.jsonl), one row per trial
 data/           Fixed synthetic filesystem/dependency graph used by Study 1
 ALL_RESULTS.md  Compiled write-up of Experiments 1-6 (jq/sed/cross-model)
 PAPER_OUTLINE.md  Paper abstract + outline synthesizing all experiment lines
-STATUS_UPDATE.md  Weekly status snapshot (as of 2026-10-20)
-research_plan.md Original two-study research plan (predates all experiments)
-experiments.txt / prelim_results.txt
-                A related, independently-run experiment line (naming x
-                grammar x documentation x cost) and its theoretical framing;
-                see PAPER_OUTLINE.md for how it connects to Experiments 1-6
 ```
 
 ## Setup
