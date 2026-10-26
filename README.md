@@ -169,6 +169,3 @@ python3 src/analyze_results.py results/<your_output>.jsonl
   write-up, so published aggregates can be independently recomputed from
   these files without re-running the API calls.
 
-## License
-
-See [`LICENSE`](LICENSE).
