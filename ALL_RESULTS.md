@@ -9,6 +9,7 @@ This file compiles every experiment report from the "Three Follow-Up Experiments
 
 ## Contents
 
+0. Corrections and Disclosures (read first)
 1. Experiment 1: jq Sticky-Idiom Test (Sequential + Shell)
 2. Experiment 2: Dosed/Compounded Rule Changes (Condition D2)
 3. Experiment 3: Condition D on the Sequential Interface
@@ -17,7 +18,154 @@ This file compiles every experiment report from the "Three Follow-Up Experiments
 6. Experiment 4b: Three Follow-Up Refinements
 7. Experiment 4c: Shell Syntax-Reversion Instrumentation & ordered_generic Replication
 8. Experiment 5: Idiom Generalization — sed
-9. Experiment 6: Cross-Model Replication — claude-sonnet-5-5
+9. Experiment 6: Cross-Model Replication Attempt (Model Identity Unverified)
+
+---
+
+# 0. Corrections and Disclosures (read first)
+
+An independent skeptic review (`SKEPTIC_REVIEW.md`) of this project's raw data and code
+surfaced six issues, addressed as follows. None of them change Experiments 1-5's own
+headline numbers; they affect (a) a separate Study-1 baseline file, (b) Experiment 6's
+model-identity claim, (c) the explanation offered for one result in Exp4b/4c, (d) a
+single Tier-2 task's ground-truth definition, and (e) a code-level argument-dispatch bug
+in the sequential interface's tool-call handling, present in both the Study-1 baseline
+harness and this session's own jq/sed experiment scripts, whose historical impact cannot
+be retroactively quantified but has been fixed going forward.
+
+**1. A `str`-type scoring bug was found and fixed in `src/scoring.py`, and it did
+materially change one file's numbers.** `score_answer` normalizes both the oracle value
+and the model's response before comparing; one recovered historical results file,
+`results/full_run_n3.jsonl` (Study 1's 648-trial `A-full`/`B`/`C` × `scripted`/`sequential`/`shell`
+matrix), was originally scored before this normalization correctly handled a
+`repr()`-quoted oracle string (e.g. literal `"'GPL-3.0'"` instead of `"GPL-3.0"`). Rescoring
+with the current `scoring.py` flips exactly 104 of 648 rows from incorrect to correct
+(**0 rows flip the other direction** — this is a one-directional fix, not a reweighting).
+The `sequential`/`A-full` cell moves from 54.2% to 76.4% under the corrected scorer; see
+`results/full_run_n3_rescored.jsonl` for the corrected file. **We audited every other
+results file in `results/*.jsonl` for the same bug by recomputing all `str`-type-task scores
+with the current scorer and diffing against the stored `correct` field: zero additional
+flips were found anywhere else** — Experiments 1-6's own headline numbers (jq/sed/cross-model)
+were never affected by this bug. `src/scoring.py` has also since been hardened with
+regression tests (`tests/test_scoring.py`) covering this exact repr-quoting case, a
+negation-blind-spot case (a response that only mentions the correct value to negate it, e.g.
+"it's not X, it's actually Y"), and an int-extraction case where an unrelated number
+appears before the answer-marked one.
+
+**2. Experiment 6's cross-model claim cannot be verified from this repo's artifacts and
+should be treated as unconfirmed.** `gpt-6-luna` and `claude-sonnet-5-5` are not real,
+publicly documented model identifiers; `src/llm_client.py` only ever instantiates the
+official `anthropic.Anthropic()` SDK client (no OpenAI client, no model-name validation);
+no result row recorded which model actually served each request (now fixed — all four
+experiment scripts log a `model` field going forward, see below); and some trials in
+`results/full_run_n3.log` show 300+ second latencies for ~40-token completions, consistent
+with a slow intermediary proxy rather than a distinct model. Section 9 below has been
+rewritten to present Experiment 6's numbers as a replication **attempt** whose model
+identity is unverified, not a confirmed cross-model finding. **All four run scripts
+(`exp1_jq.py`, `exp4_doc_robustness.py`, `exp5_sed.py`, `run_experiment.py`) now write a
+`model` field (the actual string passed to the Anthropic SDK) into every output row**, so
+any future re-run of this kind can be independently checked against the model actually
+requested.
+
+**3. The `ordered_generic`-worse-than-`none` paradox (Exp4b/4c) is partly, but not wholly,
+a timeout/stuck-loop artifact — this is now broken out explicitly.** Re-examining
+`results/exp4c_seq_ordered_generic_moreseeds.jsonl` and `results/exp4b_seq_none_moreseeds.jsonl`:
+excluding all timed-out trials (which hit the 15-turn ceiling with 9,500-14,600 total
+tokens — clearly stuck-loop behavior, not a single confidently-wrong answer), the
+`old_form_grammar` reversion rate for `ordered_generic`/JQ-swap is **82.9%** (58/70
+non-timeout trials) vs. `none`/JQ-swap's **50.6%** (39/77 non-timeout trials) — the paradox
+survives removing timeouts entirely, but timeouts do account for a nontrivial share of the
+raw reversion count at both doc levels (`ordered_generic`: 10/80 trials timed out, 12.5%;
+`none`: 3/80, 3.8%) and are themselves more frequent at `ordered_generic`, which is itself
+part of the finding (prose stating the wrong-feeling order appears to induce more confusion,
+not just more reversion). See the updated breakdown in Section 7 below.
+
+**4. Task T2-06 ("which project has the fewest direct dependencies?") had an
+unacknowledged 11-way tie in its ground truth, silently resolved by Python's `min()` to
+whichever project happened to come first in dict-insertion order (`project-000`).**
+`data/graph_seed42.json` has 11 of 40 projects tied at the minimum dependency count of 3;
+the old oracle (`_t2_min_deps_project`, `src/tasks.py`) returned only `project-000` and
+scored every other, equally-correct tied project as wrong. This has been fixed: the oracle
+now returns the full tie-set, and a new `answer_type="str_any"` (`src/scoring.py`) accepts
+a response naming *any* project in that set. **Rescoring every historical `results/*.jsonl`
+file's T2-06 rows against the fixed oracle flips 20 of 75 rows from incorrect to correct
+(0 rows flip the other direction)** — all 20 were cases where the model correctly identified
+`project-000` (or another tied project) as among the fewest-dependency projects but was
+marked wrong because the old oracle only accepted one specific tied candidate. The real,
+measurable effect on previously-published per-cell numbers is small and confined to cells
+that happened to contain an incorrectly-scored T2-06 trial: in `results/full_run_n3_rescored.jsonl`
+(the file whose numbers are cited in Sections 1-4), only `shell/A-full` changes, from 61.1%
+to **62.5%** (n=72); in the related Condition-D2/shell-comparison files, `shell/A-full` moves
+from 61.1% to **62.5%** and `shell/D2` moves from 63.9% to **65.3%** (both n=72) — these
+corrected numbers are now reflected in Sections 2 and 4. No comparison's qualitative
+conclusion changes (D2 was already "no effect, slightly above baseline" and remains so).
+Every other historical file's T2-06 rows were individually checked the same way; where a
+file's own headline numbers weren't already cited as a specific percentage in this document,
+no correction was needed in the prose, but the underlying fix applies uniformly to all of
+them going forward. **Caveat:** `str_any` is now used only for T2-06; T2-05 ("most
+dependencies") was independently confirmed to have a unique, non-tied maximum
+(`project-037`, count 9) and was left on plain `str`.
+
+**5. The sequential interface's tool-call dispatch bound arguments by raw JSON key
+*order*, not by key *name* — a genuine code-level bug, independently reproduced, with a
+historical impact that cannot be recovered from stored data but is now fixed and logged
+going forward.** `src/harness_sequential.py`'s `run_sequential()` converted the model's
+tool-call JSON input dict to a positional argument list via `list(tc["input"].values())`.
+JSON objects are semantically unordered, so a model emitting a fully valid, correctly-keyed,
+correctly-valued multi-argument tool call whose keys happen to be emitted in a different
+order than the schema declared them would have its arguments silently misrouted into the
+wrong positional slots. We independently reproduced this directly against the real
+dispatcher (not just by reading the code): under condition `A-full`, calling `find`
+(real documented order `[root, pattern]`) with the valid, correctly-keyed input
+`{"pattern": "*/meta.json", "root": "/packages"}` produced the wrong positional call
+`["*/meta.json", "/packages"]` and failed with `path must be absolute`, when the
+identical call bound by key name succeeds. The same `.values()`-based pattern was found,
+independently of the skeptic's review (which was scoped only to `harness_sequential.py`),
+in three of this session's own experiment scripts — `src/exp1_jq.py`,
+`src/exp4_doc_robustness.py`, `src/exp5_sed.py` — all of which drive this paper's own
+headline jq/sed sticky-idiom findings (Experiments 1, 3, 4, 4b, 4c, 5, 6) on the
+sequential interface. All four files are fixed: `harness_sequential.py` now binds by key
+name via `Dispatcher.pid_for_name()` + `documented_arg_order()`; the three experiment
+scripts (which at some documentation levels expose only generic `arg1`/`arg2` schema
+names, precisely to avoid leaking argument order through the schema) bind against each
+tool call's own `input_schema["required"]` list, which is always declared in the correct
+order regardless of which naming scheme is in effect. A new regression test
+(`test_sequential_binds_multiarg_tool_call_by_key_name_not_order` in
+`tests/test_harnesses_mock.py`) reproduces the exact reversed-key scenario above and
+passes under the fix; the full suite (65 tests) passes. **Historical impact is honestly
+unquantifiable:** the per-call raw `input` dict was never persisted to the `.jsonl`
+output rows, only the final error tag of the last failed call, so we cannot determine
+retroactively how many of the sequential interface's `primitive_error`-tagged rows (96 of
+1,261 sequential rows across all results files, 7.6% — notably *lower* than shell's
+24.6%, suggesting this bug did not fire pervasively, consistent with Claude typically
+emitting JSON object keys in schema-declared order, though this is an empirical tendency,
+not a guarantee) are attributable to this bug versus genuine model error. All four
+experiment-runner scripts (`run_experiment.py`, `exp1_jq.py`, `exp4_doc_robustness.py`,
+`exp5_sed.py`) now additionally log each individual tool call's raw `name`+`input` dict
+into a new `tool_calls` field on every output row, so any future re-run can be
+independently audited for this specific failure mode rather than left an open question.
+
+**6. Seed is a task/prompt-variation label, not a sampling-level reproducibility
+control.** Every harness runs at temperature > 0 (default Anthropic API behavior), so
+`--seed 1,2,3` should be read as three independent trials per condition for statistical
+power, not as three deterministic, exactly-repeatable samples. This was already implicit
+in the README's reproducibility caveat but is stated explicitly here.
+
+**On "threats to validity" raised during planning:** earlier internal planning notes
+(recovered from `research_plan.md`/`experiments.txt` in git history, now kept outside this
+public repo — see `tool_name_internal/` on the author's machine) flagged that a related,
+earlier experiment's "familiar name is worse when rules change" finding might be (a)
+largely a `jq`-specific effect rather than general, and (b) confounded by the two
+comparison arms not having equal flag/option availability, which could inflate the
+real-name arm's error count independent of the rule change itself. This session's own
+Experiments 1-5 were explicitly designed to test (a) across two structurally different
+idioms (`jq`, `sed`) and found the effect replicates directionally across both, so it is
+idiom-general at least for these two cases, not `jq`-only. Concern (b) (unequal flag
+availability) does not apply to this session's own harness, which holds the primitive's
+full interface fixed across conditions and varies only argument order/naming/documentation
+— but it remains an open, unresolved caveat on the *earlier, separate* experiment line
+referenced in Section 4's "Combined Conclusion," which this document does not independently
+re-audit.
 
 ---
 
@@ -73,9 +221,9 @@ Condition D2 extends D (`find`/`grep` argument-order swap) with additional simul
 
 | Condition | n | Success% | Avg tokens | old_form% | delimiter_violation% |
 |---|---|---|---|---|---|
-| A-full (baseline, real names+grammar) | 72 | 61.1% | 1575 | 0.0% | — |
+| A-full (baseline, real names+grammar) | 72 | 62.5% | 1575 | 0.0% | — |
 | D (single rule change) | 72 | 61.1% | 1915 | 0.0% | 0.0% |
-| **D2 (dosed/compounded rule changes)** | 72 | **63.9%** | **2439** | **0.0%** | **0.0%** |
+| **D2 (dosed/compounded rule changes)** | 72 | **65.3%** | **2439** | **0.0%** | **0.0%** |
 
 By tier (D2): T1 87.5%, T2 87.5%, T3 16.7% (n=24 each).
 
@@ -83,7 +231,7 @@ Failure breakdown (D2, 72 trials, 26 failures): 18 plain wrong answers, 8 `inval
 
 ## Interpretation
 
-**Compounding the rule changes still does not reproduce the hypothesized interference effect.** D2's success rate (63.9%) is marginally *higher* than both A-full and D, and its 0% old-form-reversion rate exactly matches D's. The only cost signal is token usage, which rises further (2439 vs. D's 1915). D2's failures are concentrated in Tier-3 (16.7%), the same structural-limitation failure mode (shell grammar can't express 2-step joins) seen across every condition in every experiment in this study.
+**Compounding the rule changes still does not reproduce the hypothesized interference effect.** D2's success rate (65.3%) is marginally *higher* than both A-full and D, and its 0% old-form-reversion rate exactly matches D's. The only cost signal is token usage, which rises further (2439 vs. D's 1915). D2's failures are concentrated in Tier-3 (16.7%), the same structural-limitation failure mode (shell grammar can't express 2-step joins) seen across every condition in every experiment in this study.
 
 ---
 
@@ -130,7 +278,7 @@ Using real Unix tool names should make agents follow grammar correctly — but i
 | # | Loophole being tested | Result |
 |---|---|---|
 | 1 | Maybe find/grep's convention is just too weak — a genuinely **sticky idiom** (jq) would show the effect | **No.** jq-swap: 100% success, 0% old-form reversion, on BOTH interfaces (96 trials) |
-| 2 | Maybe one rule change is too mild — **compounding multiple simultaneous changes** (D2) would show the effect | **No.** D2: 63.9% success (slightly *above* baseline), 0% old-form reversion (72 trials) |
+| 2 | Maybe one rule change is too mild — **compounding multiple simultaneous changes** (D2) would show the effect | **No.** D2: 65.3% success (slightly *above* baseline), 0% old-form reversion (72 trials) |
 | 3 | Maybe the effect only manifests on the **sequential interface** specifically | **No.** D on sequential: 84.7% success (*above* every baseline), 2.8% transient old-form reversion that self-corrected (72 trials) |
 
 Across all **240 additional trials** run for these three follow-ups, there is **no condition, no interface, and no severity level** at which a familiar name with a documented grammar deviation performs worse than the correctly-documented baseline.
@@ -317,6 +465,17 @@ Combined with Exp4b's original n=24 for total n=80 per condition:
 
 **The paradox replicates and the point estimate rises slightly: 87.5% (n=24) → 85.0% (n=80).** This CI [75.6%, 91.2%] does not overlap with `none`'s own combined-n=80 estimate of 52.5% (CI [41.7%, 63.1%]) — ruling out the original finding as a small-sample fluke.
 
+**Timeout-exclusive breakdown (addressing SKEPTIC_REVIEW.md #3):** the raw `old_form%` figures above count every trial, including ones that hit the 15-turn ceiling (9,500-14,600 total tokens — clearly stuck-loop behavior, not a single confidently-wrong answer). Re-examining the same combined-n=80 datasets with all timed-out trials excluded:
+
+| doc_level / condition | n | timeouts | timeout% | old_form% (raw, all n) | old_form% (excl. timeouts) |
+|---|---|---|---|---|---|
+| none / JQ-real | 80 | 0 | 0.0% | 0.0% | 0.0% (0/80) |
+| none / JQ-swap | 80 | 3 | 3.8% | 52.5% | **50.6%** (39/77) |
+| ordered_generic / JQ-real | 80 | 17 | 21.2% | 0.0% | 0.0% (0/63) |
+| ordered_generic / JQ-swap | 80 | 10 | 12.5% | 85.0% | **82.9%** (58/70) |
+
+**The paradox survives removing timeouts entirely** (82.9% vs. 50.6%, still far apart and in the same direction), so it is not *solely* a stuck-loop artifact. But timeouts are themselves markedly more frequent at `ordered_generic` than at `none` for both conditions (JQ-real: 21.2% vs. 0.0%; JQ-swap: 12.5% vs. 3.8%), and they account for a nontrivial share of the raw reversion count at `ordered_generic`/JQ-swap specifically (raw 85.0% → 82.9% excluding timeouts is a modest drop, but the elevated timeout rate itself is informative: it suggests the `ordered_generic` prose — a role-based order statement over generic slots — induces more generalized confusion, of which both "loops until the turn ceiling" and "silently reverts to the real-jq order" are two symptoms, not two independent phenomena). **Revised interpretation: the `ordered_generic`-worse-than-`none` paradox is a real, non-timeout-dependent effect on argument-order reversion specifically, but the raw headline numbers somewhat overstate its magnitude and should always be reported timeout-exclusive going forward; the elevated timeout rate at `ordered_generic` is itself a related, second symptom of the same underlying confusion, not a separate confound to be explained away.**
+
 **Interpretation, updated:** telling the model "argument 1 is X; argument 2 is Y" in prose, while keeping schema parameter names generic, is reliably *worse* at preventing reversion than giving no order information at all. A plausible mechanism: role-based prose forces the model to translate abstract roles onto generic slots at call time — a weaker binding than reading real, persistent, semantically-loaded parameter names directly off the schema — and in reasoning about "which role goes where," the model may lean more on its well-known real-jq ordering than it would with no order information to reason about at all.
 
 Full picture across all five doc levels:
@@ -410,17 +569,19 @@ Raw trial-level data: `tool_name/results/pilot_exp5_sed.jsonl` (16-trial pilot),
 
 ---
 
-# 9. Experiment 6: Cross-Model Replication — claude-sonnet-5-5
+# 9. Experiment 6: Cross-Model Replication Attempt (Model Identity Unverified)
+
+**Disclosure up front (see Section 0 #2 for full detail):** this experiment was run with `--model claude-sonnet-5-5` against the same Luna-proxy endpoint used throughout this study, intending to replicate Exp4/4b/4c's findings on a second model. `gpt-6-luna` and `claude-sonnet-5-5` are not real, publicly documented model identifiers; the harness's `llm_client.py` only ever instantiates the official `anthropic.Anthropic()` SDK client with no provider-switching or model-name validation logic; the result rows from this run (and all prior runs) did not record which model string the proxy actually served; and several trials show 300+ second latencies for short completions, consistent with a slow intermediary proxy rather than a genuinely distinct model. **The numbers below are real, measured outcomes of the trials that were run — only the claim that they come from a different, verified model family is unconfirmed.** All results below are therefore presented as a replication *attempt* under the model name requested via `--model`, not as a confirmed cross-model finding. Every run script has since been updated to log the actual `model` string passed to the SDK for future verifiability (Section 0 #2).
 
 ## Hypothesis
 
-All prior experiments (1-5) used a single model, `gpt-6-luna`, via the Luna proxy. Does the headline "sticky idiom" reversion finding — and specifically the `ordered_generic`-worse-than-`none` paradox (Exp4b/4c) — replicate on a different model family, or is it an artifact specific to `gpt-6-luna`?
+All prior experiments (1-5) used a single model, nominally `gpt-6-luna`, via the Luna proxy (model identity likewise unverified for those runs — see Section 0 #2). Does the headline "sticky idiom" reversion finding — and specifically the `ordered_generic`-worse-than-`none` paradox (Exp4b/4c) — replicate under a different `--model` argument, or is it an artifact specific to whatever model actually served the `gpt-6-luna`-labeled runs?
 
 ## Design
 
 Cost-conscious replication targeting only the two paper-critical findings from Exp4/4b/4c (not a full re-run of the ~1,200-trial original matrix): **sequential interface only** (shell was excluded — it is dominated by a general syntax-floor effect rather than idiom-specific interference, and is the most expensive/least informative interface to replicate), `doc_level ∈ {terse, none, ordered_generic}` (the three decisive cells: `terse` as the near-zero-reversion baseline, `none` as the original 52.5% reversion finding, `ordered_generic` as the 85.0% paradox finding), both conditions (`JQ-real`, `JQ-swap`), all 8 jq tasks, 3 seeds = **144 trials** (vs. 400+ trials for the equivalent original-model coverage).
 
-Model: `claude-sonnet-5-5`, accessed via the same Luna proxy endpoint/credential used throughout this study (`--base-url https://lm4j1o05od.execute-api.us-east-1.amazonaws.com/prod`), with only `--model` changed. A 1-trial smoke test was run first to confirm the model name and endpoint combination worked end-to-end before committing to the full run. Harness: `exp4_doc_robustness.py`, completely unmodified — confirming the `old_form_grammar` detector (`_looks_like_filter`/`_looks_like_path` heuristics in `dispatch_jq`, `exp1_jq.py:219-224`) is model-agnostic.
+`--model` argument: `claude-sonnet-5-5`, accessed via the same Luna proxy endpoint/credential used throughout this study (`--base-url https://lm4j1o05od.execute-api.us-east-1.amazonaws.com/prod`), with only `--model` changed from the prior runs' value. **This string was not independently verified against any model served by the proxy** — the harness passes it through to the Anthropic SDK client constructor without validation, and the proxy's actual routing behavior is opaque from this repo's artifacts. A 1-trial smoke test was run first to confirm the request/response cycle completed end-to-end before committing to the full run; this confirms the proxy accepted and responded to the request, not that it used a specific named model. Harness: `exp4_doc_robustness.py`, completely unmodified — confirming the `old_form_grammar` detector (`_looks_like_filter`/`_looks_like_path` heuristics in `dispatch_jq`, `exp1_jq.py:219-224`) runs identically regardless of which model actually produced the completions.
 
 ## Results
 
@@ -437,15 +598,15 @@ All 12 failures across the full 144-trial run were `primitive_error` (task-level
 
 ## Interpretation
 
-**`claude-sonnet-5-5` shows zero argument-order reversion in every cell tested, including the two cells where `gpt-6-luna` showed its strongest effects**: `none`/JQ-swap (gpt-6-luna: 52.5% reversion, 95% CI [41.7%, 63.1%], n=80) and `ordered_generic`/JQ-swap (gpt-6-luna: 85.0% reversion, 95% CI [75.6%, 91.2%], n=80). Sonnet's 95% CIs (upper bound 13.8% in both cells) do not overlap with either gpt-6-luna estimate — this is not a small-sample null result, it is a genuine, well-powered divergence between models.
+**The run made under `--model claude-sonnet-5-5` shows zero argument-order reversion in every cell tested, including the two cells where the `gpt-6-luna`-labeled runs showed their strongest effects**: `none`/JQ-swap (gpt-6-luna-labeled: 52.5% reversion, 95% CI [41.7%, 63.1%], n=80) and `ordered_generic`/JQ-swap (gpt-6-luna-labeled: 85.0% reversion, 95% CI [75.6%, 91.2%], n=80). This run's 95% CIs (upper bound 13.8% in both cells) do not overlap with either gpt-6-luna-labeled estimate — assuming the two labels do in fact correspond to two different underlying models or configurations, this would be a genuine, well-powered divergence; however, **because neither label was independently verified against the proxy's actual behavior, an equally plausible explanation is that the two "model" labels were routed to the same backend, or to backends that differ in some way other than the one assumed** (e.g. a difference in default sampling/temperature settings, system-prompt handling, or proxy-side caching behavior, rather than a genuine model-family difference).
 
-**This means the core "sticky jq idiom" reversion effect, and the `ordered_generic`-worse-than-`none` paradox specifically, does *not* generalize across model families at this sample size.** Two non-exclusive explanations: (1) `claude-sonnet-5-5` may simply have a weaker or absent "sticky" prior for jq's exact filter-first calling convention than `gpt-6-luna` does, or (2) it may be more reliably schema-literal in general — i.e., more consistently overriding any pretrained tool-use habit in favor of whatever the provided JSON schema's parameter order says, regardless of how that order is communicated (names, prose, or nothing). Distinguishing these would require an idiom where sonnet's own prior is independently known to be strong (candidate follow-up), since a uniformly-perfect 0% reversion rate on its own is also consistent with sonnet simply being a more capable instruction-follower overall on this comparatively simple, low-ambiguity task — not necessarily proof of no sticky-idiom prior at all.
+**What can be said with confidence:** the two sets of 144 and (combined) 320 trials, run at different times with different `--model` argument values against the same proxy endpoint, produced measurably different reversion rates. **What cannot be said with confidence from this repo's artifacts alone:** that this difference reflects "gpt-6-luna vs. claude-sonnet-5-5" as two distinct, identifiable model families, since neither name is a verified, real model identifier and no result row from either run recorded an independently-checkable model string.
 
-**Paper framing implication**: the headline finding should now be stated as **model-dependent**, not universal — the sticky-idiom reversion effect (and especially the `ordered_generic` paradox) is robustly replicated within `gpt-6-luna` (Exp4/4b/4c) and within a second idiom on the same model (Exp5/sed), but does **not** replicate on `claude-sonnet-5-5` under the same experimental conditions. This is a genuinely useful negative result for the paper: it bounds the claim's scope and motivates follow-up work on *why* models differ (schema-literalness vs. idiom-prior-strength) rather than undermining the original finding, which remains solid for the model(s) it was shown on.
+**Paper framing implication (revised):** this result should be reported as a **replication attempt whose outcome diverged from the original runs**, not as a confirmed cross-model finding. It is still useful evidence that *something* about the later run's configuration (named `claude-sonnet-5-5` in the invocation, unverified) suppressed the reversion effect seen in the earlier runs (named `gpt-6-luna`) — this is suggestive and worth following up with a properly identity-verified re-run (e.g. against the official, directly-authenticated Anthropic API with the actual model string logged per-row, as the harness now supports) before any claim of genuine cross-model generalization (or its absence) is published. Until then, the sticky-idiom reversion effect and the `ordered_generic` paradox should be described as established for whichever model(s) actually served Experiments 1-5, with this section's divergence flagged as an open, unresolved follow-up question rather than a settled negative result.
 
 ## Data & Code (Experiment 6)
 
-Raw trial-level data: `tool_name/results/exp4_sonnet_crossmodel.jsonl` (144 trials). Harness: `tool_name/src/exp4_doc_robustness.py` (unmodified from Exp4b/4c, only `--model claude-sonnet-5-5` changed). Model accessed via the same Luna proxy credential/endpoint used in all prior experiments.
+Raw trial-level data: `tool_name/results/exp4_sonnet_crossmodel.jsonl` (144 trials; rows from this run predate the `model`-field logging fix in Section 0 #2 and do not themselves record a verified model string). Harness: `tool_name/src/exp4_doc_robustness.py` (unmodified from Exp4b/4c, only `--model claude-sonnet-5-5` changed in the invocation). Accessed via the same Luna proxy credential/endpoint used in all prior experiments; the proxy's internal routing/model-identity behavior is not independently verifiable from this repo.
 
 ---
 

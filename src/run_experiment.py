@@ -99,6 +99,17 @@ def run_one_cell(
         correct = (not outcome.timed_out) and score_answer(task, oracle_value, outcome.final_answer)
         old_form_grammar = getattr(outcome, "old_form_grammar", False)
         delimiter_rule_violated = getattr(outcome, "delimiter_rule_violated", False)
+        # Log each individual tool call's raw name+input dict (preserving
+        # the model's original JSON key order) for the sequential interface
+        # only, going forward -- see SKEPTIC_REVIEW.md #6. This was
+        # previously available in-memory via TurnLog.tool_args but never
+        # serialized, making the key-order dispatch bug's historical impact
+        # unquantifiable from stored data; future runs are now auditable.
+        tool_calls_log = (
+            [{"name": l.tool_name, "input": l.tool_args} for l in outcome.turn_log]
+            if interface == "sequential"
+            else []
+        )
     except Exception as e:  # defensive: never let one bad run kill the matrix
         return {
             "interface": interface,
@@ -118,6 +129,8 @@ def run_one_cell(
             "wall_clock_s": time.time() - t0,
             "final_answer": "",
             "oracle_value": repr(oracle_value),
+            "model": client.model,
+            "tool_calls": [],
         }
 
     return {
@@ -137,6 +150,8 @@ def run_one_cell(
         "wall_clock_s": time.time() - t0,
         "final_answer": outcome.final_answer,
         "oracle_value": repr(oracle_value),
+        "model": client.model,
+        "tool_calls": tool_calls_log,
     }
 
 

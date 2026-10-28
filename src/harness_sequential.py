@@ -117,7 +117,23 @@ def run_sequential(
 
         tool_results_content = []
         for tc in result.tool_calls:
-            call_res = dispatcher.call(tc["name"], list(tc["input"].values()))
+            # Bind the model's JSON tool-call input by *key name*, not by
+            # raw dict/JSON key-emission order -- JSON objects are
+            # semantically unordered, so a correctly-keyed, correctly-valued
+            # call whose keys happen to be emitted in a different order than
+            # input_schema.properties declared them would otherwise be
+            # silently misrouted into the wrong positional slots. See
+            # SKEPTIC_REVIEW.md #6. Falls back to raw .values() only when
+            # the name doesn't resolve to a known primitive (in which case
+            # dispatcher.call() below immediately returns an invalid_name
+            # error without inspecting args).
+            pid = dispatcher.pid_for_name(tc["name"])
+            if pid is not None:
+                arg_order = documented_arg_order(condition, pid)
+                args = [tc["input"][k] for k in arg_order if k in tc["input"]]
+            else:
+                args = list(tc["input"].values())
+            call_res = dispatcher.call(tc["name"], args)
             outcome.old_form_grammar = outcome.old_form_grammar or call_res.old_form_grammar
             outcome.delimiter_rule_violated = outcome.delimiter_rule_violated or call_res.delimiter_rule_violated
             log = TurnLog(turn=turn, tool_name=tc["name"], tool_args=tc["input"])

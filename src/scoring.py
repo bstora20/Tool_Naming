@@ -7,6 +7,7 @@ not output-formatting compliance -- but strict about the actual content.
 
 from __future__ import annotations
 
+import ast
 import re
 from typing import Any, List
 
@@ -63,8 +64,35 @@ def _extract_list_items(response: str, allowed_prefixes: set | None = None) -> L
     return items
 
 
+_ANSWER_MARKED_INT_RE = re.compile(
+    r"(?:is|are|=|:|be|equals?)\s*-?\d+(?![a-zA-Z0-9])", re.IGNORECASE
+)
+_INT_RE = re.compile(r"-?\d+")
+
+
 def _extract_int(response: str) -> int | None:
-    m = re.search(r"-?\d+", response.replace(",", ""))
+    """
+    Prefer a number immediately preceded by answer-marking language (e.g.
+    "there are 5 projects" / "count = 12" / "the answer is: 3"), taking the
+    *last* such marked match if there are several (closest to a final
+    answer). Falls back to the first number in the response if no
+    answer-marked number is found, to preserve prior behavior on responses
+    that are just a bare number.
+
+    This is a heuristic hardening, not a guarantee: free-form model prose
+    can still in principle state an irrelevant number using one of these
+    marker words before the real answer. See SKEPTIC_REVIEW.md #4 for the
+    known failure mode this defends against (oracle number not being the
+    first number mentioned).
+    """
+    cleaned = response.replace(",", "")
+    marked = list(_ANSWER_MARKED_INT_RE.finditer(cleaned))
+    if marked:
+        last = marked[-1].group()
+        m = _INT_RE.search(last)
+        if m:
+            return int(m.group())
+    m = _INT_RE.search(cleaned)
     return int(m.group()) if m else None
 
 
@@ -99,11 +127,71 @@ def score_answer(task: Task, oracle_value: Any, model_response: str) -> bool:
         return got is not None and got == bool(oracle_value)
 
     if task.answer_type == "str":
+        # oracle_value may arrive as a Python repr() string (e.g. "'GPL-3.0'"
+        # with literal quote characters) when read back from a results file
+        # that logged `repr(oracle_value)` -- _normalize_token's quote-
+        # stripping handles this, but be defensive here too in case a caller
+        # passes a repr'd value directly. See SKEPTIC_REVIEW.md #2.
         target = _normalize_token(str(oracle_value))
-        if _normalize_token(model_response) == target:
-            return True
-        resp_norm = re.sub(r"\s+", " ", model_response.strip().lower())
-        pattern = r"(?<![a-z0-9_])" + re.escape(target) + r"(?![a-z0-9_])"
-        return re.search(pattern, resp_norm) is not None
+        return _str_matches(target, model_response)
+
+    if task.answer_type == "str_any":
+        # The oracle is a *set* of equally-acceptable tokens (e.g. all
+        # projects tied for "fewest dependencies") -- a response naming any
+        # one of them is correct. See SKEPTIC_REVIEW.md #5. oracle_value may
+        # arrive as an actual tuple/list, or as a repr()'d string read back
+        # from a results file (e.g. "('project-000', 'project-007')"); in
+        # the latter case we parse it back with ast.literal_eval. If the
+        # oracle only ever had one acceptable value and was repr()'d as a
+        # plain string (not a tuple/list literal), ast.literal_eval raises
+        # and we fall back to treating the whole string as the single
+        # candidate, matching plain "str" behavior.
+        candidates: tuple
+        if isinstance(oracle_value, (list, tuple, set)):
+            candidates = tuple(oracle_value)
+        elif isinstance(oracle_value, str):
+            try:
+                parsed = ast.literal_eval(oracle_value)
+            except (ValueError, SyntaxError):
+                parsed = oracle_value
+            candidates = tuple(parsed) if isinstance(parsed, (list, tuple, set)) else (parsed,)
+        else:
+            candidates = (oracle_value,)
+        return any(_str_matches(_normalize_token(str(c)), model_response) for c in candidates)
 
     raise ValueError(f"unknown answer_type: {task.answer_type!r}")
+
+
+def _str_matches(target: str, model_response: str) -> bool:
+    """
+    Core str-comparison logic shared by answer_type "str" and "str_any":
+    exact-normalized match, or a whole-word substring match guarded against
+    pure negation (but allowing genuine self-correction). See
+    SKEPTIC_REVIEW.md #4.
+    """
+    if _normalize_token(model_response) == target:
+        return True
+    resp_norm = re.sub(r"\s+", " ", model_response.strip().lower())
+    pattern = r"(?<![a-z0-9_])" + re.escape(target) + r"(?![a-z0-9_])"
+    match = re.search(pattern, resp_norm)
+    if match is None:
+        return False
+    # Negation guard: reject if a negation word appears shortly before
+    # the match with no intervening clause break, UNLESS the response
+    # later affirms the correct value in its own right (self-correction
+    # pattern, e.g. "not X... actually Y" where Y == target) -- see
+    # SKEPTIC_REVIEW.md #4. We approximate "later affirms" by requiring
+    # at least one occurrence of the target that is NOT itself preceded
+    # by a negation word within the lookback window.
+    negation_re = re.compile(r"\b(?:not|isn't|n't|never|no)\b")
+    clause_break_re = re.compile(r"[.;:,]|\bbut\b|\bactually\b|\bhowever\b")
+    for m in re.finditer(pattern, resp_norm):
+        window_start = max(0, m.start() - 20)
+        window = resp_norm[window_start:m.start()]
+        last_break = max(
+            (b.end() for b in clause_break_re.finditer(window)), default=0
+        )
+        pre_negation_zone = window[last_break:]
+        if not negation_re.search(pre_negation_zone):
+            return True
+    return False

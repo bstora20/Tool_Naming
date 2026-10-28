@@ -101,6 +101,36 @@ def test_sequential_invalid_tool_name_logged():
     print("PASS: sequential harness logs invalid_name error_tag correctly")
 
 
+def test_sequential_binds_multiarg_tool_call_by_key_name_not_order():
+    """
+    Regression test for SKEPTIC_REVIEW.md #6: run_sequential() used to
+    dispatch a tool call's JSON input dict via `list(tc["input"].values())`,
+    relying entirely on the model's JSON key-emission order matching the
+    schema's declared property order. A correctly-keyed, correctly-valued
+    call whose keys are emitted in a different order (both are valid JSON/
+    valid tool calls) must still be routed to the right positional slots.
+
+    Uses P2 (find_by_pattern, real/documented order [root, pattern]) called
+    with the keys deliberately reversed in the input dict -- {"pattern":
+    ..., "root": ...} -- exactly mirroring the skeptic's own dispatcher-level
+    repro. Before the fix this misrouted "*/meta.json" into the root slot
+    and failed with "path must be absolute"; after the fix it must succeed.
+    """
+    vfs = load_vfs()
+    condition = "A-full"
+    dispatcher = Dispatcher(vfs, condition)
+    find_name = build_specs(condition)["P2"].name  # "find"
+
+    client = MockClient([
+        _tool_use(find_name, {"pattern": "*/meta.json", "root": "/packages/pkg-113"}),
+        _final_text("found it"),
+    ])
+    outcome = run_sequential(client, dispatcher, condition, "irrelevant")
+    assert outcome.turn_log[0].ok, outcome.turn_log[0].error_tag
+    assert outcome.final_answer == "found it"
+    print("PASS: sequential harness binds multi-arg tool calls by key name, not JSON key order")
+
+
 def test_sequential_timeout_when_max_turns_exceeded():
     vfs = load_vfs()
     condition = "A-full"

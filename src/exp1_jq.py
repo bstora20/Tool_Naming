@@ -305,6 +305,7 @@ class RunOutcome:
     old_form_grammar: bool = False
     final_error_tag: str = ""
     command_log: List[str] = field(default_factory=list)
+    tool_calls_log: List[Dict[str, Any]] = field(default_factory=list)
 
 
 def run_jq_shell(
@@ -390,7 +391,17 @@ def run_jq_sequential(
 
         tool_results_content = []
         for tc in result.tool_calls:
-            call_res = dispatch_jq(vfs, condition, tc["name"], list(tc["input"].values()))
+            # Bind by key name, not raw JSON key-emission order -- see
+            # SKEPTIC_REVIEW.md #6 (same defect class as
+            # harness_sequential.py, independently present here since this
+            # module's sequential dispatch loop is self-contained). The
+            # schema's own "required" list is always declared in the
+            # correct positional order, so it is the single source of
+            # truth for name->position mapping, rather than re-deriving it.
+            key_order = tools[0]["input_schema"]["required"]
+            args = [tc["input"][k] for k in key_order if k in tc["input"]]
+            outcome.tool_calls_log.append({"name": tc["name"], "input": tc["input"]})
+            call_res = dispatch_jq(vfs, condition, tc["name"], args)
             outcome.old_form_grammar = outcome.old_form_grammar or call_res.old_form_grammar
             if call_res.ok:
                 content_str = str(call_res.value)
@@ -455,6 +466,8 @@ def run_one_cell(
             "wall_clock_s": time.time() - t0,
             "final_answer": "",
             "oracle_value": repr(oracle_value),
+            "model": client.model,
+            "tool_calls": [],
         }
 
     return {
@@ -473,6 +486,8 @@ def run_one_cell(
         "wall_clock_s": time.time() - t0,
         "final_answer": outcome.final_answer,
         "oracle_value": repr(oracle_value),
+        "model": client.model,
+        "tool_calls": outcome.tool_calls_log,
     }
 
 

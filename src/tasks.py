@@ -13,10 +13,16 @@ oracle.
 
 `answer_type` controls how a model's free-text final answer is normalized
 and compared against the oracle in scoring.py:
-  - "list"  : order-independent set-of-strings comparison
-  - "int"   : numeric comparison (ints parsed out of the response)
-  - "bool"  : yes/no / true/false comparison
-  - "str"   : single-token/short-string comparison (case-insensitive)
+  - "list"     : order-independent set-of-strings comparison
+  - "int"      : numeric comparison (ints parsed out of the response)
+  - "bool"     : yes/no / true/false comparison
+  - "str"      : single-token/short-string comparison (case-insensitive)
+  - "str_any"  : like "str", but the oracle is a *set* of acceptable
+                 tokens and a response naming any one of them is correct.
+                 Used for "which X has the min/max Y" questions where the
+                 underlying data has a tie -- see SKEPTIC_REVIEW.md #5
+                 (T2-06's min-dependency-count tie was previously resolved
+                 arbitrarily by dict-insertion order under plain "str").
 """
 
 from __future__ import annotations
@@ -107,8 +113,18 @@ def _t2_max_deps_project(graph: Graph) -> str:
     return max(graph.projects.items(), key=lambda kv: len(kv[1]["deps"]))[0]
 
 
-def _t2_min_deps_project(graph: Graph) -> str:
-    return min(graph.projects.items(), key=lambda kv: len(kv[1]["deps"]))[0]
+def _t2_min_deps_project(graph: Graph) -> tuple:
+    """
+    Returns *all* projects tied at the minimum direct-dependency count, not
+    just one arbitrarily-chosen winner. On `data/graph_seed42.json` this
+    count is tied 11 ways; picking a single winner via `min()` would credit
+    only whichever project happens to come first in dict-insertion order,
+    silently marking 10 other equally-correct "fewest dependencies" answers
+    as wrong. See SKEPTIC_REVIEW.md #5. Paired with answer_type="str_any",
+    which accepts a response naming any one project in the returned tuple.
+    """
+    min_count = min(len(info["deps"]) for info in graph.projects.values())
+    return tuple(sorted(p for p, info in graph.projects.items() if len(info["deps"]) == min_count))
 
 
 def _t2_owner_count(graph: Graph) -> int:
@@ -125,7 +141,7 @@ TIER2: List[Task] = [
     Task("T2-03", 2, "How many packages have license MIT?", _t2_mit_count, "int"),
     Task("T2-04", 2, "List all deprecated packages.", _t2_deprecated_list, "list"),
     Task("T2-05", 2, "Which project has the most direct dependencies?", _t2_max_deps_project, "str"),
-    Task("T2-06", 2, "Which project has the fewest direct dependencies?", _t2_min_deps_project, "str"),
+    Task("T2-06", 2, "Which project has the fewest direct dependencies?", _t2_min_deps_project, "str_any"),
     Task("T2-07", 2, "How many packages are owned by openforge?", _t2_owner_count, "int"),
     Task("T2-08", 2, "List all packages with license Proprietary.", _t2_proprietary_list, "list"),
 ]

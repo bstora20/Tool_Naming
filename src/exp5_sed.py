@@ -394,6 +394,7 @@ class RunOutcome:
     syntax_reversion: bool = False
     final_error_tag: str = ""
     command_log: List[str] = field(default_factory=list)
+    tool_calls_log: List[Dict[str, Any]] = field(default_factory=list)
 
 
 def run_sed_sequential_doc(
@@ -421,7 +422,18 @@ def run_sed_sequential_doc(
 
         tool_results_content = []
         for tc in result.tool_calls:
-            call_res = dispatch_sed(vfs, condition, tc["name"], list(tc["input"].values()))
+            # Bind by key name, not raw JSON key-emission order -- see
+            # SKEPTIC_REVIEW.md #6 (same defect class as
+            # harness_sequential.py, independently present here since this
+            # module's sequential dispatch loop is self-contained). The
+            # schema's own "required" list is always declared in the
+            # correct positional order (including the generic arg1/arg2
+            # names used at doc_level in {none, ordered_generic}), so it is
+            # the single source of truth for name->position mapping.
+            key_order = tools[0]["input_schema"]["required"]
+            args = [tc["input"][k] for k in key_order if k in tc["input"]]
+            outcome.tool_calls_log.append({"name": tc["name"], "input": tc["input"]})
+            call_res = dispatch_sed(vfs, condition, tc["name"], args)
             outcome.old_form_grammar = outcome.old_form_grammar or call_res.old_form_grammar
             if call_res.ok:
                 content_str = str(call_res.value)
@@ -555,6 +567,8 @@ def run_one_cell(
             "final_answer": "",
             "oracle_value": repr(oracle_value),
             "command_log": [],
+            "model": client.model,
+            "tool_calls": [],
         }
 
     return {
@@ -576,6 +590,8 @@ def run_one_cell(
         "final_answer": outcome.final_answer,
         "oracle_value": repr(oracle_value),
         "command_log": outcome.command_log,
+        "model": client.model,
+        "tool_calls": outcome.tool_calls_log,
     }
 
 
